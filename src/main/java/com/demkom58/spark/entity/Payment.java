@@ -28,5 +28,7 @@ public class Payment {
     @Column(name = "time", nullable = false)
     private LocalDateTime time;
 
-    private long value;
+    @Column(name = "value", nullable = false)
+    private Long value;
+
 }
