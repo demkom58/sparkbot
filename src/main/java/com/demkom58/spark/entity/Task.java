@@ -25,6 +25,9 @@ public class Task {
     @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "price", nullable = false)
+    private Long price;
+
     @Column(name = "description")
     private String description;
 
