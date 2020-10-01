@@ -3,6 +3,7 @@ package com.demkom58.spark.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 
@@ -24,4 +25,8 @@ public class CategoryAccess {
     @JoinColumn(name = "group_id", referencedColumnName = "group_id", nullable = false)
     private Group group;
 
+    public CategoryAccess(@NotNull Category category, @NotNull Group group) {
+        this.category = category;
+        this.group = group;
+    }
 }

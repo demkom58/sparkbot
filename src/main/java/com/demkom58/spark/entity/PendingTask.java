@@ -3,6 +3,7 @@ package com.demkom58.spark.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.persistence.*;
@@ -38,4 +39,15 @@ public class PendingTask {
     private String validatorAnswer;
     private Boolean valid;
 
+    public PendingTask(@NotNull User author, @NotNull Category category, @NotNull Long price,
+                       @Nullable String description, @Nullable User validator, @Nullable String validatorAnswer,
+                       @Nullable Boolean valid) {
+        this.author = author;
+        this.category = category;
+        this.price = price;
+        this.description = description;
+        this.validator = validator;
+        this.validatorAnswer = validatorAnswer;
+        this.valid = valid;
+    }
 }

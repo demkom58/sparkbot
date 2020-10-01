@@ -3,6 +3,7 @@ package com.demkom58.spark.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.persistence.*;
@@ -38,4 +39,13 @@ public class Task {
     @JoinColumn(name = "pending_task_id", referencedColumnName = "pending_task_id")
     @Nullable
     private PendingTask pendingTask;
+
+    public Task(@NotNull User author, @NotNull Category category, @NotNull Long price,
+                @Nullable String description, @Nullable PendingTask pendingTask) {
+        this.author = author;
+        this.category = category;
+        this.price = price;
+        this.description = description;
+        this.pendingTask = pendingTask;
+    }
 }
