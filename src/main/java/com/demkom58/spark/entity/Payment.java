@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -25,7 +26,6 @@ public class Payment {
     @JoinColumn(name = "task_id", referencedColumnName = "task_id", nullable = false)
     private Task task;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time", nullable = false)
     private LocalDateTime time;
 
