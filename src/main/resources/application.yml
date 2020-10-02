@@ -1,6 +1,7 @@
 bot:
   token: '${BOT_TOKEN}'
   username: '${BOT_USERNAME:workholder_bot}'
+  owner_id: ${OWNER_ID}
 
 spring:
   datasource:

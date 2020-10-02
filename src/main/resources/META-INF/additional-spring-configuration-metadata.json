@@ -9,6 +9,11 @@
       "name": "bot.token",
       "type": "java.lang.String",
       "description": "Token of telegram bot."
+    },
+    {
+      "name": "bot.owner_id",
+      "type": "java.lang.Integer",
+      "description": "Telegram identifier of bot owner"
     }
   ]
 }
