@@ -12,7 +12,9 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
 
     Collection<Payment> getAllByTask(Task user);
 
-    Collection<Payment> getAllByUser(User user);
+    Collection<Payment> getAllBySender(User user);
+
+    Collection<Payment> getAllByReceiver(User user);
 
     Collection<Payment> getAllByValue(Long value);
 }

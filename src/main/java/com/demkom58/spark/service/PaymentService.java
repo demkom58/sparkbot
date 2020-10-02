@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+
 @Service
 public class PaymentService {
     private final PaymentRepository paymentRepository;
@@ -49,12 +51,14 @@ public class PaymentService {
             return Result.failure(new LightweightException("У вас нет доступа к этой категории."));
 
         final var price = task.getPrice();
-        final var payment = new Payment(user, task, price);
+        final var author = task.getAuthor();
+        final var payment = new Payment(user, author, task, price);
 
         user.setBalance(user.getBalance() - price);
+        author.setBalance(author.getBalance() + price);
 
         paymentRepository.save(payment);
-        userRepository.save(user);
+        userRepository.saveAll(Arrays.asList(user, author));
 
         return Result.success(payment);
     }

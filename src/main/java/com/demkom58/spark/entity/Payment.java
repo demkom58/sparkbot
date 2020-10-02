@@ -19,8 +19,12 @@ public class Payment {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "sender_id", referencedColumnName = "user_id", nullable = false)
+    private User sender;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", referencedColumnName = "user_id", nullable = false)
+    private User receiver;
 
     @ManyToOne
     @JoinColumn(name = "task_id", referencedColumnName = "task_id", nullable = false)
@@ -32,15 +36,20 @@ public class Payment {
     @Column(name = "value", nullable = false)
     private Long value;
 
-    public Payment(@NotNull User user, @NotNull Task task, @NotNull LocalDateTime time, @NotNull Long value) {
-        this.user = user;
+    public Payment(@NotNull User sender,
+                   @NotNull User receiver,
+                   @NotNull Task task,
+                   @NotNull LocalDateTime time,
+                   @NotNull Long value) {
+        this.sender = sender;
+        this.receiver = receiver;
         this.task = task;
         this.time = time;
         this.value = value;
     }
 
-    public Payment(@NotNull User user, @NotNull Task task, @NotNull Long value) {
-        this(user, task, LocalDateTime.now(), value);
+    public Payment(@NotNull User sender, @NotNull User receiver, @NotNull Task task, @NotNull Long value) {
+        this(sender, receiver, task, LocalDateTime.now(), value);
     }
 
 }
