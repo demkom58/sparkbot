@@ -1,0 +1,18 @@
+bot:
+  token: '${BOT_TOKEN}'
+  username: '${BOT_USERNAME:workholder_bot}'
+
+spring:
+  datasource:
+    url: '${DB_URL}'
+    username: '${DB_USERNAME}'
+    password: '${DB_PASSWORD}'
+  jpa:
+    properties:
+      hibernate:
+        default_schema: '${DB_DEFAULT_SCHEMA:spark}'
+        jdbc:
+          time_zone: '${JDBC_TIMEZONE:UTC}'
+    hibernate:
+      ddl-auto: update
+    show-sql: '${SHOW_SQL:false}'
