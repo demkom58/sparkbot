@@ -12,10 +12,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import java.util.List;
 
 @BotController
-public class SimpleController {
+public class StartController {
     private final ReplyKeyboardMarkup menuKeyboardMarkup = new ReplyKeyboardMarkup();
 
-    public SimpleController() {
+    public StartController() {
         final var read = new KeyboardRow();
         read.addAll(List.of("Группы", "Заявки"));
         final var write = new KeyboardRow();
@@ -29,7 +29,10 @@ public class SimpleController {
         menuKeyboardMarkup.setKeyboard(List.of(read, write, other));
     }
 
-    @CommandMapping(value = {"/start", "/menu"}, event = EventType.TEXT_MESSAGE)
+    @CommandMapping(
+            value = {"/start", "Start", "Старт", "/menu", "Menu", "Меню"},
+            event = EventType.TEXT_MESSAGE
+    )
     public SendMessage start(Update update) {
         final Message message = update.getMessage();
         final Long chatId = message.getChatId();
@@ -38,16 +41,6 @@ public class SimpleController {
                 .setChatId(chatId)
                 .setText("Отобразил тебе меню :)")
                 .setReplyMarkup(menuKeyboardMarkup);
-    }
-
-    @CommandMapping(value = "/info", event = EventType.TEXT_MESSAGE)
-    public SendMessage info(Update update) {
-        final Message message = update.getMessage();
-        final Long chatId = message.getChatId();
-
-        return new SendMessage()
-                .setChatId(chatId)
-                .setText("Твой ID: " + message.getFrom().getId());
     }
 
 }
