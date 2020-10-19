@@ -42,7 +42,7 @@ public class SimpleController {
 
     @CommandMapping(value = "/info", event = EventType.TEXT_MESSAGE)
     public SendMessage info(Update update) {
-        final Message message = update.getEditedMessage();
+        final Message message = update.getMessage();
         final Long chatId = message.getChatId();
 
         return new SendMessage()
