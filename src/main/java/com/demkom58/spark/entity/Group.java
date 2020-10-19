@@ -17,6 +17,9 @@ public class Group {
     @Column(name = "group_id", nullable = false)
     private Long id;
 
+    @Column(name = "group_name", nullable = false)
+    private String name;
+
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id", nullable = false)
     private User owner;
