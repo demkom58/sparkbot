@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class StartController {
         final var write = new KeyboardRow();
         write.addAll(List.of("Отправить", "Управление"));
         final var other = new KeyboardRow();
-        other.addAll(List.of("Создать группу", "Донат"));
+        other.addAll(List.of("Донат"));
 
         menuKeyboardMarkup.setSelective(true);
         menuKeyboardMarkup.setResizeKeyboard(true);
