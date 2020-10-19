@@ -81,7 +81,7 @@ public class CommandContainer {
     }
 
     public String getPath(String message) {
-        return message.split(" ", 1)[0].trim();
+        return message.split(" ", 1)[0].trim().toLowerCase();
     }
 
 }

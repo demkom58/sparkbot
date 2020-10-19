@@ -54,7 +54,7 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
 
         for (String headPath : controllerValues)
             for (String mappedPath : mappingValues)
-                paths.add(headPath + mappedPath);
+                paths.add(headPath.toLowerCase() + mappedPath.toLowerCase());
 
         List<BotCommandController> controller = new ArrayList<>();
         for (EventType botRequestMethod : mapping.event())
