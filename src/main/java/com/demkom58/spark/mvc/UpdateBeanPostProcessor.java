@@ -47,14 +47,20 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     private void generateController(@NotNull Object bean, @NotNull Method method) {
         final BotController botController = bean.getClass().getAnnotation(BotController.class);
         final CommandMapping mapping = method.getAnnotation(CommandMapping.class);
-        final String path = (botController.value().length != 0 ? botController.value()[0] : "")
-                + (mapping.value().length != 0 ? mapping.value()[0] : "");
+
+        final Set<String> paths = new HashSet<>();
+        final String[] controllerValues = botController.value().length != 0 ? botController.value() : new String[]{""};
+        final String[] mappingValues = mapping.value().length != 0 ? mapping.value() : new String[]{""};
+
+        for (String headPath : controllerValues)
+            for (String mappedPath : mappingValues)
+                paths.add(headPath + mappedPath);
 
         List<BotCommandController> controller = new ArrayList<>();
         for (EventType botRequestMethod : mapping.event())
             controller.add(botRequestMethod.getControllerFactory().create(mapping, bean, method));
 
-        container.addBotControllers(path, controller);
+        container.addBotControllers(paths, controller);
     }
 
     @Override

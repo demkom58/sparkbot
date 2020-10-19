@@ -25,6 +25,10 @@ public class CommandContainer {
     private CommandContainer() {
     }
 
+    public void addBotControllers(Collection<String> paths, Collection<BotCommandController> controller) {
+        paths.forEach(path -> controller.forEach(c -> addBotController(path, c)));
+    }
+
     public void addBotControllers(String path, Collection<BotCommandController> controller) {
         controller.forEach(c -> addBotController(path, c));
     }

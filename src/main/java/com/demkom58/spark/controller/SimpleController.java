@@ -29,7 +29,7 @@ public class SimpleController {
         menuKeyboardMarkup.setKeyboard(List.of(read, write, other));
     }
 
-    @CommandMapping(value = "/start", event = EventType.TEXT_MESSAGE)
+    @CommandMapping(value = {"/start", "/menu"}, event = EventType.TEXT_MESSAGE)
     public SendMessage start(Update update) {
         final Message message = update.getMessage();
         final Long chatId = message.getChatId();
