@@ -73,7 +73,11 @@ public class CommandContainer {
     private Collection<BotCommandController> findControllers(EventType method, String message) {
         if (message != null) {
             final var categoryMap = controllerMap.get(method);
-            final var controllers = categoryMap.get(getPath(message));
+            var controllers = categoryMap.get(message);
+
+            if (controllers.isEmpty())
+                controllers = categoryMap.get(getPath(message));
+
             return controllers.isEmpty() ? categoryMap.get("") : controllers;
         }
 
