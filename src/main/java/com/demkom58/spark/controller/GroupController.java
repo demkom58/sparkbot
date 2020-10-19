@@ -1,17 +1,14 @@
 package com.demkom58.spark.controller;
 
-import com.demkom58.spark.entity.Group;
 import com.demkom58.spark.entity.GroupAccess;
 import com.demkom58.spark.entity.User;
 import com.demkom58.spark.mvc.EventType;
 import com.demkom58.spark.mvc.annotations.BotController;
 import com.demkom58.spark.mvc.annotations.CommandMapping;
 import com.demkom58.spark.repo.GroupAccessRepository;
-import com.demkom58.spark.repo.GroupRepository;
 import com.demkom58.spark.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Collection;
