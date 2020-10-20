@@ -1,6 +1,9 @@
 package com.demkom58.spark.bot;
 
 import com.demkom58.spark.mvc.CommandContainer;
+import com.demkom58.spark.mvc.CommandResult;
+import com.demkom58.spark.mvc.controller.BotCommandController;
+import com.demkom58.spark.mvc.controller.CommandController;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -29,6 +34,13 @@ public class SparkBot extends TelegramLongPollingBot {
                     @Value("${bot.token}") String token,
                     @Value("${bot.username}") String username) {
         this.container = container;
+        this.container.setExecutor((response) -> {
+            try {
+                execute(response);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        });
 
         this.botToken = token;
         this.botUsername = username;
@@ -41,14 +53,7 @@ public class SparkBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        container.getHandle(update).forEach(c ->
-                c.process(update).forEach(result -> {
-                    try {
-                        execute(result);
-                    } catch (TelegramApiException e) {
-                        e.printStackTrace();
-                    }
-                }));
+        container.handle(update);
     }
 
     @Bean(name = "botAccount")
