@@ -2,7 +2,6 @@ package com.demkom58.spark.controller;
 
 import com.demkom58.spark.entity.GroupAccess;
 import com.demkom58.spark.entity.User;
-import com.demkom58.spark.mvc.CommandResult;
 import com.demkom58.spark.mvc.EventType;
 import com.demkom58.spark.mvc.annotations.BotController;
 import com.demkom58.spark.mvc.annotations.CommandMapping;
@@ -10,7 +9,6 @@ import com.demkom58.spark.repo.GroupAccessRepository;
 import com.demkom58.spark.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Collection;
@@ -26,7 +24,7 @@ public class GroupController {
             value = {"/groups", "Groups", "Группы"},
             event = EventType.TEXT_MESSAGE
     )
-    public CommandResult groups(Update update) {
+    public SendMessage groups(Update update) {
         final var message = update.getMessage();
         final var tgUser = message.getFrom();
 
@@ -36,11 +34,9 @@ public class GroupController {
         final User user = userService.getUser(authorId);
         final Collection<GroupAccess> accesses = groupAccessRepository.getAllByUser(user);
         if (accesses.isEmpty())
-            return CommandResult.simple(
-                    new SendMessage()
-                            .setChatId(chatId)
-                            .setText("У тебя нет доступа ни к каким группам :(")
-            );
+            return new SendMessage()
+                    .setChatId(chatId)
+                    .setText("У тебя нет доступа ни к каким группам :(");
 
         final StringJoiner joiner = new StringJoiner("\n");
         joiner.add("Ты состоишь в группах:");
@@ -49,10 +45,8 @@ public class GroupController {
             joiner.add(group.getName() + "(#" + group.getId() + ")");
         });
 
-        final SendMessage sendMessage = new SendMessage()
+        return new SendMessage()
                 .setChatId(chatId)
                 .setText(joiner.toString());
-
-        return CommandResult.simple(sendMessage);
     }
 }

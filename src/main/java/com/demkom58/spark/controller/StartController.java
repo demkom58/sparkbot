@@ -1,6 +1,5 @@
 package com.demkom58.spark.controller;
 
-import com.demkom58.spark.mvc.CommandResult;
 import com.demkom58.spark.mvc.EventType;
 import com.demkom58.spark.mvc.annotations.BotController;
 import com.demkom58.spark.mvc.annotations.CommandMapping;
@@ -34,16 +33,14 @@ public class StartController {
             value = {"/start", "Start", "Старт", "/menu", "Menu", "Меню"},
             event = EventType.TEXT_MESSAGE
     )
-    public CommandResult start(Update update) {
+    public SendMessage start(Update update) {
         final Message message = update.getMessage();
         final Long chatId = message.getChatId();
 
-        return CommandResult.simple(
-                new SendMessage()
-                        .setChatId(chatId)
-                        .setText("Отобразил тебе меню :)")
-                        .setReplyMarkup(menuKeyboardMarkup)
-        );
+        return new SendMessage()
+                .setChatId(chatId)
+                .setText("Отобразил тебе меню :)")
+                .setReplyMarkup(menuKeyboardMarkup);
     }
 
 }
