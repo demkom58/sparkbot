@@ -59,7 +59,6 @@ public class CommandContainer {
         }
     }
 
-    @NotNull
     public void handle(@NotNull final Update update) {
         final User user = extractUser(update);
 
