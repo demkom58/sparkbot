@@ -94,12 +94,15 @@ public class CommandContainer {
         if (controllers == null)
             controllers = Collections.emptyList();
 
-        for (CommandController c : controllers)
-            for (CommandResult result : c.process(update)) {
-                result.execute(executor);
-                if (user != null && result.getInterceptor() != null)
-                    interceptorStorage.add(user, result);
-            }
+        for (CommandController c : controllers) {
+            CommandResult result = c.process(update);
+            if (result == null)
+                continue;
+
+            result.execute(executor);
+            if (user != null && result.getInterceptor() != null)
+                interceptorStorage.add(user, result);
+        }
     }
 
     private Collection<CommandController> findControllers(EventType method, String message) {
