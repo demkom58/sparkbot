@@ -19,8 +19,6 @@ dependencies {
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter'
-
-    implementation group: 'com.github.xabgesagtx', name: 'telegram-spring-boot-starter', version: '0.25'
     implementation group: 'org.telegram', name: 'telegrambots', version: '5.5.0'
 
     implementation group: 'org.jetbrains', name: 'annotations', version: '23.0.0'

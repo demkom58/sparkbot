@@ -26,8 +26,8 @@ repositories {
 }
 
 dependencies {
-//    implementation project(":telegram-mvc-spring-boot-starter")
-    implementation group: 'com.github.xabgesagtx', name: 'telegram-spring-boot-starter', version: '0.25'
+    implementation project(":telegram-mvc-spring-boot-starter")
+    implementation group: 'org.telegram', name: 'telegrambots', version: '5.5.0'
 
     implementation group: 'com.github.bgerstle', name: 'result-java', version: '0.0.1'
     implementation group: 'org.jetbrains', name: 'annotations', version: '23.0.0'
