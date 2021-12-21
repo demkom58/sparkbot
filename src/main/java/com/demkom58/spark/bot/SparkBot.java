@@ -1,6 +1,5 @@
 package com.demkom58.spark.bot;
 
-import com.bgerstle.result.Result;
 import com.demkom58.telegram.mvc.CommandContainer;
 import lombok.Getter;
 import org.slf4j.Logger;
