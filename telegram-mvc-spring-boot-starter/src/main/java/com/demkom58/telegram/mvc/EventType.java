@@ -1,7 +1,7 @@
-package com.demkom58.spark.mvc;
+package com.demkom58.telegram.mvc;
 
-import com.demkom58.spark.mvc.controller.ApiMethodControllerFactory;
-import com.demkom58.spark.mvc.controller.SimpleCommandController;
+import com.demkom58.telegram.mvc.controller.ApiMethodControllerFactory;
+import com.demkom58.telegram.mvc.controller.SimpleCommandController;
 
 import java.util.Arrays;
 

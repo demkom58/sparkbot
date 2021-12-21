@@ -1,8 +1,8 @@
-package com.demkom58.spark.mvc;
+package com.demkom58.telegram.mvc;
 
-import com.demkom58.spark.mvc.annotations.BotController;
-import com.demkom58.spark.mvc.annotations.CommandMapping;
-import com.demkom58.spark.mvc.controller.BotCommandController;
+import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.controller.BotCommandController;
+import com.demkom58.telegram.mvc.annotations.BotController;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;

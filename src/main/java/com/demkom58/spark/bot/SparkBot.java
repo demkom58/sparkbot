@@ -1,9 +1,7 @@
 package com.demkom58.spark.bot;
 
-import com.demkom58.spark.mvc.CommandContainer;
-import com.demkom58.spark.mvc.CommandResult;
-import com.demkom58.spark.mvc.controller.BotCommandController;
-import com.demkom58.spark.mvc.controller.CommandController;
+import com.bgerstle.result.Result;
+import com.demkom58.telegram.mvc.CommandContainer;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -62,13 +58,11 @@ public class SparkBot extends TelegramLongPollingBot {
     }
 
     private Optional<User> getBotAccount() {
-        User me = null;
         try {
-            me = getMe();
+            return Optional.of(getMe());
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            return Optional.empty();
         }
-        return Optional.ofNullable(me);
     }
 
 }

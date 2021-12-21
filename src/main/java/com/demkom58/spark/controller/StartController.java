@@ -1,8 +1,8 @@
 package com.demkom58.spark.controller;
 
-import com.demkom58.spark.mvc.EventType;
-import com.demkom58.spark.mvc.annotations.BotController;
-import com.demkom58.spark.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.EventType;
+import com.demkom58.telegram.mvc.annotations.BotController;
+import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -37,10 +37,11 @@ public class StartController {
         final Message message = update.getMessage();
         final Long chatId = message.getChatId();
 
-        return new SendMessage()
-                .setChatId(chatId)
-                .setText("Отобразил тебе меню :)")
-                .setReplyMarkup(menuKeyboardMarkup);
+        return SendMessage.builder()
+                .chatId(String.valueOf(chatId))
+                .text("Отобразил тебе меню :)")
+                .replyMarkup(menuKeyboardMarkup)
+                .build();
     }
 
 }

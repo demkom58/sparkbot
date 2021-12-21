@@ -1,6 +1,6 @@
-package com.demkom58.spark.mvc.annotations;
+package com.demkom58.telegram.mvc.annotations;
 
-import com.demkom58.spark.mvc.EventType;
+import com.demkom58.telegram.mvc.EventType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

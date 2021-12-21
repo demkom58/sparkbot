@@ -2,9 +2,9 @@ package com.demkom58.spark.controller;
 
 import com.demkom58.spark.entity.GroupAccess;
 import com.demkom58.spark.entity.User;
-import com.demkom58.spark.mvc.EventType;
-import com.demkom58.spark.mvc.annotations.BotController;
-import com.demkom58.spark.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.EventType;
+import com.demkom58.telegram.mvc.annotations.BotController;
+import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import com.demkom58.spark.repo.GroupAccessRepository;
 import com.demkom58.spark.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +29,15 @@ public class GroupController {
         final var tgUser = message.getFrom();
 
         final Long chatId = message.getChatId();
-        final Integer authorId = tgUser.getId();
+        final Long authorId = tgUser.getId();
 
         final User user = userService.getUser(authorId);
         final Collection<GroupAccess> accesses = groupAccessRepository.getAllByUser(user);
         if (accesses.isEmpty())
-            return new SendMessage()
-                    .setChatId(chatId)
-                    .setText("У тебя нет доступа ни к каким группам :(");
+            return SendMessage.builder()
+                    .chatId(String.valueOf(chatId))
+                    .text("У тебя нет доступа ни к каким группам :(")
+                    .build();
 
         final StringJoiner joiner = new StringJoiner("\n");
         joiner.add("Ты состоишь в группах:");
@@ -45,8 +46,9 @@ public class GroupController {
             joiner.add(group.getName() + "(#" + group.getId() + ")");
         });
 
-        return new SendMessage()
-                .setChatId(chatId)
-                .setText(joiner.toString());
+        return SendMessage.builder()
+                .chatId(String.valueOf(chatId))
+                .text(joiner.toString())
+                .build();
     }
 }

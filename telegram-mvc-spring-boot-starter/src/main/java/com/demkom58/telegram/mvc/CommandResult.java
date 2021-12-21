@@ -1,4 +1,4 @@
-package com.demkom58.spark.mvc;
+package com.demkom58.telegram.mvc;
 
 import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;

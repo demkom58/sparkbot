@@ -1,4 +1,4 @@
-package com.demkom58.spark.mvc.annotations;
+package com.demkom58.telegram.mvc.annotations;
 
 import org.springframework.stereotype.Component;
 

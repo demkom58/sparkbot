@@ -1,7 +1,7 @@
-package com.demkom58.spark.mvc.controller;
+package com.demkom58.telegram.mvc.controller;
 
-import com.demkom58.spark.mvc.CommandResult;
-import com.demkom58.spark.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.CommandResult;
+import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 

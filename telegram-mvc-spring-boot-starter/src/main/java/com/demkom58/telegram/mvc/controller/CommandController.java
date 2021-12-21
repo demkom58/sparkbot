@@ -1,6 +1,6 @@
-package com.demkom58.spark.mvc.controller;
+package com.demkom58.telegram.mvc.controller;
 
-import com.demkom58.spark.mvc.CommandResult;
+import com.demkom58.telegram.mvc.CommandResult;
 import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.objects.Update;
 

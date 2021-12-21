@@ -15,7 +15,7 @@ import javax.persistence.Id;
 public class User {
     @Id
     @Column(name = "user_id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "balance", nullable = false)
     private Long balance = 0L;

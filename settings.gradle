@@ -1,2 +1,3 @@
 rootProject.name = 'Spark'
+include 'telegram-mvc-spring-boot-starter'
 

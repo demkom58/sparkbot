@@ -15,7 +15,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public @NotNull User getUser(int id) {
+    public @NotNull User getUser(long id) {
         User found = userRepository.getById(id);
 
         if (found == null) {

@@ -1,8 +1,8 @@
-package com.demkom58.spark.mvc;
+package com.demkom58.telegram.mvc;
 
-import com.demkom58.spark.mvc.annotations.CommandMapping;
-import com.demkom58.spark.mvc.controller.BotCommandController;
-import com.demkom58.spark.mvc.controller.CommandController;
+import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.controller.BotCommandController;
+import com.demkom58.telegram.mvc.controller.CommandController;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import org.jetbrains.annotations.NotNull;

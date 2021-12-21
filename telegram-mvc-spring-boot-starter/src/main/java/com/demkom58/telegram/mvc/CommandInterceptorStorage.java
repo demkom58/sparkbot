@@ -1,6 +1,5 @@
-package com.demkom58.spark.mvc;
+package com.demkom58.telegram.mvc;
 
-import com.demkom58.spark.mvc.CommandResult;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.stereotype.Component;
