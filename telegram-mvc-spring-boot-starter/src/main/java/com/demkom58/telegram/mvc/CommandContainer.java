@@ -5,10 +5,9 @@ import com.demkom58.telegram.mvc.controller.BotCommandController;
 import com.demkom58.telegram.mvc.controller.CommandController;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -18,8 +17,8 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @Component
+@Slf4j
 public class CommandContainer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommandContainer.class);
     private final Map<EventType, Multimap<String, CommandController>> controllerMap =
             new EnumMap<>(new HashMap<EventType, Multimap<String, CommandController>>() {{
                 for (EventType value : EventType.pathMethods())
@@ -27,7 +26,8 @@ public class CommandContainer {
             }});
     private final Collection<CommandController> pathlessControllers = new HashSet<>();
     private final CommandInterceptorStorage interceptorStorage;
-    private Consumer<BotApiMethod<?>> executor = (m) -> {};
+    private Consumer<BotApiMethod<?>> executor = (m) -> {
+    };
 
     public CommandContainer(@NotNull final CommandInterceptorStorage interceptorStorage) {
         this.interceptorStorage = interceptorStorage;
@@ -53,7 +53,7 @@ public class CommandContainer {
                 pathlessControllers.add(controller);
 
             if (canHasPath) {
-                LOGGER.trace("add telegram bot controller for path: {}", path);
+                log.trace("add telegram bot controller for path: {}", path);
                 controllerMap.get(eventType).put(path, controller);
             }
         }

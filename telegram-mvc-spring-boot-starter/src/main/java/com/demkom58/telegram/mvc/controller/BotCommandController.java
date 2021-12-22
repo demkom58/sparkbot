@@ -2,9 +2,8 @@ package com.demkom58.telegram.mvc.controller;
 
 import com.demkom58.telegram.mvc.CommandResult;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -13,9 +12,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 public abstract class BotCommandController implements CommandController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BotCommandController.class);
-
     private final CommandMapping mapping;
     private final Object bean;
     private final Method method;
@@ -40,7 +38,7 @@ public abstract class BotCommandController implements CommandController {
         try {
             return handler.handle(update);
         } catch (ReflectiveOperationException e) {
-            LOGGER.error("bad invoke method", e);
+            log.error("bad invoke method", e);
         }
 
         return null;
