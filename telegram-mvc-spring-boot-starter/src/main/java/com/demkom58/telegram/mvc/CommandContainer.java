@@ -9,7 +9,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -112,29 +111,6 @@ public class CommandContainer {
 
     public String getPath(String message) {
         return message.split(" ", 1)[0].trim().toLowerCase();
-    }
-
-    @Nullable
-    public static User extractUser(Update update) {
-        if (update.hasMessage())
-            return update.getMessage().getFrom();
-
-        if (update.hasCallbackQuery())
-            return update.getCallbackQuery().getFrom();
-
-        if (update.hasPollAnswer())
-            return update.getPollAnswer().getUser();
-
-        if (update.hasEditedMessage())
-            return update.getEditedChannelPost().getFrom();
-
-        if (update.hasInlineQuery())
-            return update.getInlineQuery().getFrom();
-
-        if (update.hasShippingQuery())
-            return update.getShippingQuery().getFrom();
-
-        return null;
     }
 
     public void setExecutor(Consumer<BotApiMethod<?>> executor) {
