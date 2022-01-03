@@ -1,6 +1,6 @@
 package com.demkom58.telegram.mvc.annotations;
 
-import com.demkom58.telegram.mvc.EventType;
+import com.demkom58.telegram.mvc.message.MessageType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 public @interface CommandMapping {
     String[] value() default {};
 
-    EventType[] event() default {EventType.TEXT_MESSAGE};
+    MessageType[] event() default {MessageType.TEXT_MESSAGE};
 
     boolean pathOnly() default false;
 }

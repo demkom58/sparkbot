@@ -1,11 +1,10 @@
 package com.demkom58.spark.controller;
 
-import com.demkom58.telegram.mvc.EventType;
 import com.demkom58.telegram.mvc.annotations.BotController;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.message.MessageType;
+import com.demkom58.telegram.mvc.message.TelegramMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
@@ -31,14 +30,11 @@ public class StartController {
 
     @CommandMapping(
             value = {"/start", "Start", "Старт", "/menu", "Menu", "Меню"},
-            event = EventType.TEXT_MESSAGE
+            event = MessageType.TEXT_MESSAGE
     )
-    public SendMessage start(Update update) {
-        final Message message = update.getMessage();
-        final Long chatId = message.getChatId();
-
+    public SendMessage start(TelegramMessage message) {
         return SendMessage.builder()
-                .chatId(String.valueOf(chatId))
+                .chatId(String.valueOf(message.getChatId()))
                 .text("Отобразил тебе меню :)")
                 .replyMarkup(menuKeyboardMarkup)
                 .build();

@@ -3,6 +3,8 @@ package com.demkom58.telegram.mvc;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import com.demkom58.telegram.mvc.controller.BotCommandController;
 import com.demkom58.telegram.mvc.controller.CommandController;
+import com.demkom58.telegram.mvc.message.MessageType;
+import com.demkom58.telegram.mvc.message.TelegramMessage;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +21,9 @@ import java.util.function.Consumer;
 @Component
 @Slf4j
 public class CommandContainer {
-    private final Map<EventType, Multimap<String, CommandController>> controllerMap =
-            new EnumMap<>(new HashMap<EventType, Multimap<String, CommandController>>() {{
-                for (EventType value : EventType.pathMethods())
+    private final Map<MessageType, Multimap<String, CommandController>> controllerMap =
+            new EnumMap<>(new HashMap<MessageType, Multimap<String, CommandController>>() {{
+                for (MessageType value : MessageType.pathMethods())
                     put(value, Multimaps.newSetMultimap(new HashMap<>(), HashSet::new));
             }});
     private final Collection<CommandController> pathlessControllers = new HashSet<>();
@@ -43,11 +45,11 @@ public class CommandContainer {
 
     public void addBotController(String path, BotCommandController controller) {
         final CommandMapping mapping = controller.getMapping();
-        final EventType[] eventTypes = mapping.event();
+        final MessageType[] eventTypes = mapping.event();
 
         final boolean pathOnly = mapping.pathOnly();
 
-        for (EventType eventType : eventTypes) {
+        for (MessageType eventType : eventTypes) {
             final boolean canHasPath = eventType.canHasPath();
             if (!pathOnly)
                 pathlessControllers.add(controller);
@@ -60,52 +62,41 @@ public class CommandContainer {
     }
 
     public void handle(@NotNull final Update update) {
-        final User user = extractUser(update);
+        final TelegramMessage message = TelegramMessage.from(update);
+        if (message.getEventType() == null) {
+            return;
+        }
 
-        if (user != null) {
-            final Optional<CommandResult> commandResult = interceptorStorage.processIntercept(user, update);
+        final User fromUser = message.getFromUser();
+        if (fromUser != null) {
+            final Optional<CommandResult> commandResult = interceptorStorage.processIntercept(fromUser, update);
             if (commandResult.isPresent()) {
                 final CommandResult interceptorResult = commandResult.get().intercept(update);
                 interceptorResult.execute(executor);
 
                 if (!interceptorResult.isSaveOld())
-                    interceptorStorage.drop(user);
+                    interceptorStorage.drop(fromUser);
 
                 if (interceptorResult.getInterceptor() != null)
-                    interceptorStorage.add(user, interceptorResult);
+                    interceptorStorage.add(fromUser, interceptorResult);
 
                 return;
             }
         }
 
-        Collection<CommandController> controllers;
-        if (update.hasMessage()) {
-            controllers = findControllers(EventType.TEXT_MESSAGE, update.getMessage().getText());
-        } else if (update.hasEditedMessage()) {
-            controllers = findControllers(EventType.TEXT_MESSAGE_EDIT, update.getEditedMessage().getText());
-        } else if (update.hasChannelPost()) {
-            controllers = findControllers(EventType.TEXT_POST, update.getChannelPost().getText());
-        } else if (update.hasEditedChannelPost()) {
-            controllers = findControllers(EventType.TEXT_POST_EDIT, update.getEditedMessage().getText());
-        } else {
-            controllers = pathlessControllers;
-        }
-
-        if (controllers == null)
-            controllers = Collections.emptyList();
-
+        Collection<CommandController> controllers = findControllers(message.getEventType(), message.getText());
         for (CommandController c : controllers) {
-            CommandResult result = c.process(update);
+            CommandResult result = c.process(message);
             if (result == null)
                 continue;
 
             result.execute(executor);
-            if (user != null && result.getInterceptor() != null)
-                interceptorStorage.add(user, result);
+            if (fromUser != null && result.getInterceptor() != null)
+                interceptorStorage.add(fromUser, result);
         }
     }
 
-    private Collection<CommandController> findControllers(EventType method, String message) {
+    private Collection<CommandController> findControllers(MessageType method, String message) {
         if (message != null) {
             final var categoryMap = controllerMap.get(method);
             var controllers = categoryMap.get(message);

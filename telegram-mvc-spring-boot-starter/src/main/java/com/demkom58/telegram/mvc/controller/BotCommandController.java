@@ -2,10 +2,10 @@ package com.demkom58.telegram.mvc.controller;
 
 import com.demkom58.telegram.mvc.CommandResult;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.message.TelegramMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -27,16 +27,16 @@ public abstract class BotCommandController implements CommandController {
         this.handler = createHandler();
     }
 
-    public abstract boolean successUpdatePredicate(Update update);
+    public abstract boolean isSupportedMessage(TelegramMessage message);
 
     @Override
     @Nullable
-    public CommandResult process(Update update) {
-        if (!successUpdatePredicate(update))
+    public CommandResult process(TelegramMessage message) {
+        if (!isSupportedMessage(message))
             return null;
 
         try {
-            return handler.handle(update);
+            return handler.handle(message);
         } catch (ReflectiveOperationException e) {
             log.error("bad invoke method", e);
         }
@@ -48,18 +48,18 @@ public abstract class BotCommandController implements CommandController {
         final Class<?> returnType = method.getReturnType();
 
         if (CommandResult.class.isAssignableFrom(returnType))
-            return (u) -> (CommandResult) method.invoke(bean, u);
+            return (message) -> (CommandResult) method.invoke(bean, message);
 
         if (BotApiMethod.class.isAssignableFrom(returnType))
-            return (u) -> CommandResult.simple((BotApiMethod<?>) method.invoke(bean, u));
+            return (message) -> CommandResult.simple((BotApiMethod<?>) method.invoke(bean, message));
 
         if (Collection.class.isAssignableFrom(returnType)) {
             ParameterizedType collectionType = (ParameterizedType) method.getGenericReturnType();
             ParameterizedType actualTypeArgument = (ParameterizedType) collectionType.getActualTypeArguments()[0];
             try {
                 if (BotApiMethod.class.isAssignableFrom(Class.forName(actualTypeArgument.getRawType().getTypeName())))
-                    return (u) -> new CommandResult(
-                            (List<BotApiMethod<?>>) method.invoke(bean, u), null, null, false
+                    return (message) -> new CommandResult(
+                            (List<BotApiMethod<?>>) method.invoke(bean, message), null, null, false
                     );
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -80,7 +80,7 @@ public abstract class BotCommandController implements CommandController {
     }
 
     public interface Handler {
-        @Nullable CommandResult handle(Update update) throws ReflectiveOperationException;
+        @Nullable CommandResult handle(TelegramMessage message) throws ReflectiveOperationException;
     }
 
 }
