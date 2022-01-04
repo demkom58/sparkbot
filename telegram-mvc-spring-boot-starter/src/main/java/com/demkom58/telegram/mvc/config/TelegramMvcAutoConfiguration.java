@@ -16,7 +16,9 @@ public class TelegramMvcAutoConfiguration {
 
     @Bean
     public CommandContainer commandContainer(CommandInterceptorStorage storage) {
-        return new CommandContainer(storage, new AntPathMatcher());
+        final AntPathMatcher pathMatcher = new AntPathMatcher(" ");
+        pathMatcher.setCaseSensitive(false);
+        return new CommandContainer(storage, pathMatcher);
     }
 
     @Bean

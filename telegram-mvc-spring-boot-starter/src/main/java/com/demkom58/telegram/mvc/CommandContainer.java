@@ -74,7 +74,8 @@ public class CommandContainer {
 
     public void handle(@NotNull final Update update) {
         final TelegramMessage message = TelegramMessage.from(update);
-        if (message.getEventType() == null) {
+        final MessageType eventType = message.getEventType();
+        if (eventType == null) {
             return;
         }
 
@@ -97,11 +98,18 @@ public class CommandContainer {
             }
         }
 
-        TelegramMessageHandler handler = findControllers(message.getEventType(), message.getText().toLowerCase());
+        final String messageText = message.getText();
+        TelegramMessageHandler handler = findControllers(eventType, messageText);
         if (handler == null) {
             return;
         }
 
+        final Map<String, String> variables = pathMatcher.extractUriTemplateVariables(
+                handler.getMapping().value(),
+                messageText
+        );
+
+        message.setAttribute("variables", variables);
         CommandResult result = handler.handle(message);
         if (result == null) {
             return;
@@ -115,7 +123,7 @@ public class CommandContainer {
 
     private TelegramMessageHandler findControllers(MessageType method, String message) {
         if (StringUtils.hasText(message)) {
-            var directHandler = directMap.get(method).get(message);
+            var directHandler = directMap.get(method).get(message.toLowerCase());
             if (directHandler != null) {
                 return directHandler;
             }
