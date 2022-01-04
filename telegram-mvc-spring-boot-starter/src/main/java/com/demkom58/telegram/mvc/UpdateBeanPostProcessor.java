@@ -2,7 +2,7 @@ package com.demkom58.telegram.mvc;
 
 import com.demkom58.telegram.mvc.annotations.BotController;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
-import com.demkom58.telegram.mvc.controller.BotCommandController;
+import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
 import com.demkom58.telegram.mvc.message.MessageType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
@@ -57,7 +57,7 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
             for (String mappedPath : mappingValues)
                 paths.add(headPath.toLowerCase() + mappedPath.toLowerCase());
 
-        List<BotCommandController> controller = new ArrayList<>();
+        List<TelegramMessageHandlerMethod> controller = new ArrayList<>();
         for (MessageType botRequestMethod : mapping.event())
             controller.add(botRequestMethod.getControllerFactory().create(mapping, bean, method));
 

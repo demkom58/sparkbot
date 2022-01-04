@@ -4,7 +4,7 @@ import com.demkom58.telegram.mvc.CommandResult;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import org.jetbrains.annotations.Nullable;
 
-public interface CommandController {
+public interface TelegramMessageHandler {
     @Nullable
-    CommandResult process(TelegramMessage message);
+    CommandResult handle(TelegramMessage message);
 }

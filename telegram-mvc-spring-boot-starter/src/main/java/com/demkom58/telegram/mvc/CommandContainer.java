@@ -1,8 +1,8 @@
 package com.demkom58.telegram.mvc;
 
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
-import com.demkom58.telegram.mvc.controller.BotCommandController;
-import com.demkom58.telegram.mvc.controller.CommandController;
+import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
+import com.demkom58.telegram.mvc.controller.TelegramMessageHandler;
 import com.demkom58.telegram.mvc.message.MessageType;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import com.google.common.collect.Multimap;
@@ -20,12 +20,12 @@ import java.util.function.Consumer;
 @Component
 @Slf4j
 public class CommandContainer {
-    private final Map<MessageType, Multimap<String, CommandController>> controllerMap =
-            new EnumMap<>(new HashMap<MessageType, Multimap<String, CommandController>>() {{
+    private final Map<MessageType, Multimap<String, TelegramMessageHandler>> controllerMap =
+            new EnumMap<>(new HashMap<MessageType, Multimap<String, TelegramMessageHandler>>() {{
                 for (MessageType value : MessageType.pathMethods())
                     put(value, Multimaps.newSetMultimap(new HashMap<>(), HashSet::new));
             }});
-    private final Collection<CommandController> pathlessControllers = new HashSet<>();
+    private final Collection<TelegramMessageHandler> pathlessControllers = new HashSet<>();
     private final CommandInterceptorStorage interceptorStorage;
     private Consumer<BotApiMethod<?>> executor = (m) -> {
     };
@@ -34,15 +34,15 @@ public class CommandContainer {
         this.interceptorStorage = interceptorStorage;
     }
 
-    public void addBotControllers(Collection<String> paths, Collection<BotCommandController> controller) {
+    public void addBotControllers(Collection<String> paths, Collection<TelegramMessageHandlerMethod> controller) {
         paths.forEach(path -> controller.forEach(c -> addBotController(path, c)));
     }
 
-    public void addBotControllers(String path, Collection<BotCommandController> controller) {
+    public void addBotControllers(String path, Collection<TelegramMessageHandlerMethod> controller) {
         controller.forEach(c -> addBotController(path, c));
     }
 
-    public void addBotController(String path, BotCommandController controller) {
+    public void addBotController(String path, TelegramMessageHandlerMethod controller) {
         final CommandMapping mapping = controller.getMapping();
         final MessageType[] eventTypes = mapping.event();
 
@@ -83,9 +83,9 @@ public class CommandContainer {
             }
         }
 
-        Collection<CommandController> controllers = findControllers(message.getEventType(), message.getText());
-        for (CommandController c : controllers) {
-            CommandResult result = c.process(message);
+        Collection<TelegramMessageHandler> controllers = findControllers(message.getEventType(), message.getText());
+        for (TelegramMessageHandler c : controllers) {
+            CommandResult result = c.handle(message);
             if (result == null)
                 continue;
 
@@ -95,7 +95,7 @@ public class CommandContainer {
         }
     }
 
-    private Collection<CommandController> findControllers(MessageType method, String message) {
+    private Collection<TelegramMessageHandler> findControllers(MessageType method, String message) {
         if (message != null) {
             final var categoryMap = controllerMap.get(method);
             var controllers = categoryMap.get(message);

@@ -5,6 +5,8 @@ import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.core.BridgeMethodResolver;
+import org.springframework.util.ReflectionUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 
 import java.lang.reflect.Method;
@@ -13,38 +15,36 @@ import java.util.Collection;
 import java.util.List;
 
 @Slf4j
-public abstract class BotCommandController implements CommandController {
+public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
     private final CommandMapping mapping;
     private final Object bean;
     private final Method method;
+    private final Method protoMethod;
 
     private final Handler handler;
 
-    public BotCommandController(CommandMapping mapping, Object bean, Method method) {
+    public TelegramMessageHandlerMethod(CommandMapping mapping, Object bean, Method method) {
         this.mapping = mapping;
         this.bean = bean;
         this.method = method;
+        this.protoMethod = BridgeMethodResolver.findBridgedMethod(method);
+        ReflectionUtils.makeAccessible(protoMethod);
         this.handler = createHandler();
     }
 
-    public abstract boolean isSupportedMessage(TelegramMessage message);
-
     @Override
     @Nullable
-    public CommandResult process(TelegramMessage message) {
-        if (!isSupportedMessage(message))
-            return null;
-
+    public CommandResult handle(TelegramMessage message) {
         try {
             return handler.handle(message);
         } catch (ReflectiveOperationException e) {
             log.error("bad invoke method", e);
         }
-
         return null;
     }
 
     public Handler createHandler() {
+        final Method method = protoMethod;
         final Class<?> returnType = method.getReturnType();
 
         if (CommandResult.class.isAssignableFrom(returnType))
@@ -67,16 +67,12 @@ public abstract class BotCommandController implements CommandController {
         }
 
         throw new IllegalArgumentException(
-                "Method '" + method.getName() + "' of class '" + bean.getClass().getName() + "' returns invalid type. "
+                "Method '" + this.method.getName() + "' of class '" + bean.getClass().getName() + "' returns invalid type. "
         );
     }
 
     public CommandMapping getMapping() {
         return mapping;
-    }
-
-    boolean typeListReturnDetect() {
-        return CommandResult.class.equals(method.getReturnType());
     }
 
     public interface Handler {
