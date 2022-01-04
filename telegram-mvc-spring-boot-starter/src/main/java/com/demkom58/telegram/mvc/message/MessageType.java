@@ -1,15 +1,12 @@
 package com.demkom58.telegram.mvc.message;
 
-import com.demkom58.telegram.mvc.controller.ApiMethodControllerFactory;
-import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
-
 import java.util.Arrays;
 
 public enum MessageType {
-    TEXT_MESSAGE(TelegramMessageHandlerMethod::new, true),
-    TEXT_MESSAGE_EDIT(TelegramMessageHandlerMethod::new, true),
-    TEXT_POST(TelegramMessageHandlerMethod::new, true),
-    TEXT_POST_EDIT(TelegramMessageHandlerMethod::new, true),
+    TEXT_MESSAGE(true),
+    TEXT_MESSAGE_EDIT(true),
+    TEXT_POST(true),
+    TEXT_POST_EDIT(true),
     ;
 
     private static final MessageType[] pathMethods
@@ -17,16 +14,10 @@ public enum MessageType {
     private static final MessageType[] pathlessMethods
             = Arrays.stream(values()).filter(b -> !b.canHasPath).toArray(MessageType[]::new);
 
-    private final ApiMethodControllerFactory controllerFactory;
     private final boolean canHasPath;
 
-    MessageType(ApiMethodControllerFactory controllerFactory, boolean canHasPath) {
-        this.controllerFactory = controllerFactory;
+    MessageType(boolean canHasPath) {
         this.canHasPath = canHasPath;
-    }
-
-    public ApiMethodControllerFactory getControllerFactory() {
-        return controllerFactory;
     }
 
     public boolean canHasPath() {
