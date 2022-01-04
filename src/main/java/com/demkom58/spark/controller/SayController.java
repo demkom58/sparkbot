@@ -12,7 +12,7 @@ public class SayController {
             value = {"/say {input}"},
             event = MessageType.TEXT_MESSAGE
     )
-    public SendMessage groups(TelegramMessage message, String input) {
+    public SendMessage say(TelegramMessage message, String input) {
         return SendMessage.builder()
                 .chatId(String.valueOf(message.getChatId()))
                 .text("Говорю тебе: " + input)
