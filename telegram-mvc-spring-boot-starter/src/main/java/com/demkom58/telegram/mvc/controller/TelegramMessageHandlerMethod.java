@@ -16,14 +16,14 @@ import java.util.List;
 
 @Slf4j
 public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
-    private final CommandMapping mapping;
+    private final HandlerMapping mapping;
     private final Object bean;
     private final Method method;
     private final Method protoMethod;
 
     private final Handler handler;
 
-    public TelegramMessageHandlerMethod(CommandMapping mapping, Object bean, Method method) {
+    public TelegramMessageHandlerMethod(HandlerMapping mapping, Object bean, Method method) {
         this.mapping = mapping;
         this.bean = bean;
         this.method = method;
@@ -71,8 +71,13 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         );
     }
 
-    public CommandMapping getMapping() {
+    @Override
+    public HandlerMapping getMapping() {
         return mapping;
+    }
+
+    public Method getMethod() {
+        return method;
     }
 
     public interface Handler {

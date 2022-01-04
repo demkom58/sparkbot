@@ -10,9 +10,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandMapping {
-    String[] value() default {};
+    String[] value() default {""};
 
     MessageType[] event() default {MessageType.TEXT_MESSAGE};
-
-    boolean pathOnly() default false;
 }

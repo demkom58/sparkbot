@@ -2,8 +2,8 @@ package com.demkom58.telegram.mvc;
 
 import com.demkom58.telegram.mvc.annotations.BotController;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.controller.HandlerMapping;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
-import com.demkom58.telegram.mvc.message.MessageType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -53,15 +53,18 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
         final String[] controllerValues = botController.value().length != 0 ? botController.value() : new String[]{""};
         final String[] mappingValues = mapping.value().length != 0 ? mapping.value() : new String[]{""};
 
-        for (String headPath : controllerValues)
-            for (String mappedPath : mappingValues)
+        for (String headPath : controllerValues) {
+            for (String mappedPath : mappingValues) {
                 paths.add(headPath.toLowerCase() + mappedPath.toLowerCase());
+            }
+        }
 
-        List<TelegramMessageHandlerMethod> controller = new ArrayList<>();
-        for (MessageType botRequestMethod : mapping.event())
-            controller.add(botRequestMethod.getControllerFactory().create(mapping, bean, method));
+        for (String path : paths) {
+            final var handlerMapping = new HandlerMapping(mapping.event(), path);
+            final var handlerMethod = new TelegramMessageHandlerMethod(handlerMapping, bean, method);
+            container.addBotController(path, handlerMethod);
+        }
 
-        container.addBotControllers(paths, controller);
     }
 
     @Override

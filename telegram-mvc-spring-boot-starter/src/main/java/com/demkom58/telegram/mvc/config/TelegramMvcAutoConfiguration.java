@@ -5,6 +5,7 @@ import com.demkom58.telegram.mvc.CommandInterceptorStorage;
 import com.demkom58.telegram.mvc.UpdateBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.AntPathMatcher;
 
 @Configuration
 public class TelegramMvcAutoConfiguration {
@@ -15,7 +16,7 @@ public class TelegramMvcAutoConfiguration {
 
     @Bean
     public CommandContainer commandContainer(CommandInterceptorStorage storage) {
-        return new CommandContainer(storage);
+        return new CommandContainer(storage, new AntPathMatcher());
     }
 
     @Bean
