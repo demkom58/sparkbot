@@ -1,5 +1,6 @@
 package com.demkom58.telegram.mvc.config;
 
+import com.demkom58.telegram.mvc.CommandContainer;
 import com.demkom58.telegram.mvc.UpdateBeanPostProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,13 @@ public class TelegramMvcAutoConfiguration {
     private final TelegramMvcConfigurerComposite configurerComposite = new TelegramMvcConfigurerComposite();
 
     @Bean
-    public UpdateBeanPostProcessor updateBeanPostProcessor() {
-        return new UpdateBeanPostProcessor(configurerComposite);
+    public CommandContainer commandContainer() {
+        return new CommandContainer();
+    }
+
+    @Bean
+    public UpdateBeanPostProcessor updateBeanPostProcessor(CommandContainer container) {
+        return new UpdateBeanPostProcessor(container, configurerComposite);
     }
 
     @Autowired(required = false)

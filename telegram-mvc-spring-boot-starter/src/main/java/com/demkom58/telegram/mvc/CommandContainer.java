@@ -33,16 +33,20 @@ public class CommandContainer {
                     put(value, Maps.newHashMap());
             }});
 
-    private final PathMatchingConfigurer pathMatchingConfigurer;
-    private final PathMatcher pathMatcher;
+    private PathMatchingConfigurer pathMatchingConfigurer;
 
     private HandlerMethodReturnValueHandlerComposite returnValueHandlers = new HandlerMethodReturnValueHandlerComposite();
 
-    public CommandContainer(final PathMatchingConfigurer pathMatchingConfigurer) {
-        Objects.requireNonNull(pathMatchingConfigurer, "PathMatchingConfigurer can't be null!");
+    public PathMatchingConfigurer getPathMatchingConfigurer() {
+        return pathMatchingConfigurer;
+    }
 
+    public void setPathMatchingConfigurer(PathMatchingConfigurer pathMatchingConfigurer) {
         this.pathMatchingConfigurer = pathMatchingConfigurer;
-        this.pathMatcher = pathMatchingConfigurer.getPathMatcher();
+    }
+
+    public HandlerMethodReturnValueHandlerComposite getReturnValueHandlers() {
+        return returnValueHandlers;
     }
 
     public void setReturnValueHandlers(final HandlerMethodReturnValueHandlerComposite returnValueHandlers) {
@@ -55,6 +59,7 @@ public class CommandContainer {
         final Method mtd = controller.getMethod();
         final MessageType[] eventTypes = mapping.messageTypes();
 
+        final PathMatcher pathMatcher = getPathMatcher();
         for (MessageType messageType : eventTypes) {
             final boolean canHasPath = messageType.canHasPath();
             if (canHasPath) {
@@ -97,7 +102,7 @@ public class CommandContainer {
             return;
         }
 
-        final Map<String, String> variables = pathMatcher
+        final Map<String, String> variables = getPathMatcher()
                 .extractUriTemplateVariables(handler.getMapping().value(), messageText);
 
         message.setAttribute("variables", variables);
@@ -125,6 +130,8 @@ public class CommandContainer {
 
             final List<TelegramMessageHandler> handlers = new ArrayList<>();
             final var entries = patternMap.get(method).entrySet();
+
+            final PathMatcher pathMatcher = getPathMatcher();
             for (Map.Entry<String, TelegramMessageHandler> entry : entries) {
                 final String key = entry.getKey();
                 if (pathMatcher.match(key, message)) {
@@ -146,5 +153,9 @@ public class CommandContainer {
         }
 
         return null;
+    }
+
+    public PathMatcher getPathMatcher() {
+        return pathMatchingConfigurer.getPathMatcher();
     }
 }

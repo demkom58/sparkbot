@@ -34,7 +34,7 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     private final HandlerMethodReturnValueHandlerComposite returnValueHandlers
             = new HandlerMethodReturnValueHandlerComposite();
 
-    public UpdateBeanPostProcessor(TelegramMvcConfigurerComposite configurerComposite) {
+    public UpdateBeanPostProcessor(CommandContainer container, TelegramMvcConfigurerComposite configurerComposite) {
         List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
         configurerComposite.configureArgumentResolvers(resolvers);
         resolvers.addAll(createArgumentResolvers());
@@ -45,8 +45,9 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
         returnHandlers.addAll(createReturnValueHandlers());
         this.returnValueHandlers.addAll(returnHandlers);
 
+        this.container = container;
         configurerComposite.configurePathMatcher(this.pathMatchingConfigurer);
-        this.container = new CommandContainer(this.pathMatchingConfigurer);
+        container.setPathMatchingConfigurer(this.pathMatchingConfigurer);
         container.setReturnValueHandlers(this.returnValueHandlers);
     }
 
