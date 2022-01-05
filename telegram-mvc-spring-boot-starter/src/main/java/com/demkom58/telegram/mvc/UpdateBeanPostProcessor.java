@@ -4,9 +4,12 @@ import com.demkom58.telegram.mvc.annotations.BotController;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import com.demkom58.telegram.mvc.controller.HandlerMapping;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
-import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolverComposite;
 import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolver;
+import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolverComposite;
 import com.demkom58.telegram.mvc.controller.argument.impl.PathVariablesHandlerMethodArgumentResolver;
+import com.demkom58.telegram.mvc.controller.result.HandlerMethodReturnValueHandler;
+import com.demkom58.telegram.mvc.controller.result.HandlerMethodReturnValueHandlerComposite;
+import com.demkom58.telegram.mvc.controller.result.impl.SendMessageHandlerMethodReturnValueHandler;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -19,19 +22,36 @@ import java.util.*;
 @Component
 public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     private final Map<String, Class<?>> botControllerMap = new HashMap<>();
+
     private final CommandContainer container;
-    private final HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
+
+    private final HandlerMethodArgumentResolverComposite argumentResolvers
+            = new HandlerMethodArgumentResolverComposite();
+
+    private final HandlerMethodReturnValueHandlerComposite returnValueHandlers
+            = new HandlerMethodReturnValueHandlerComposite();
 
     public UpdateBeanPostProcessor(CommandContainer container,
-                                   List<HandlerMethodArgumentResolver> argumentResolvers) {
+                                   List<HandlerMethodArgumentResolver> argumentResolvers,
+                                   List<HandlerMethodReturnValueHandler> returnValueHandlers) {
         this.container = container;
         this.argumentResolvers.addAll(createArgumentResolvers());
         this.argumentResolvers.addAll(argumentResolvers);
+        this.returnValueHandlers.addAll(createReturnValueHandlers());
+        this.returnValueHandlers.addAll(returnValueHandlers);
+
+        container.setReturnValueHandlers(this.returnValueHandlers);
     }
 
     private List<HandlerMethodArgumentResolver> createArgumentResolvers() {
         return Arrays.asList(
                 new PathVariablesHandlerMethodArgumentResolver()
+        );
+    }
+
+    private List<HandlerMethodReturnValueHandler> createReturnValueHandlers() {
+        return Arrays.asList(
+                new SendMessageHandlerMethodReturnValueHandler()
         );
     }
 

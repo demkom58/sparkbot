@@ -27,6 +27,7 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
     private final Method protoMethod;
 
     private final MethodParameter[] parameters;
+    private final MethodParameter returnType;
 
     private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
     private HandlerMethodArgumentResolverComposite resolvers = new HandlerMethodArgumentResolverComposite();
@@ -38,6 +39,7 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         this.protoMethod = BridgeMethodResolver.findBridgedMethod(method);
         ReflectionUtils.makeAccessible(protoMethod);
         this.parameters = methodParameters(method);
+        this.returnType = new MethodParameter(method, -1);
     }
 
     public void setParameterNameDiscoverer(ParameterNameDiscoverer parameterNameDiscoverer) {
@@ -124,8 +126,13 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         return method;
     }
 
-    public interface Handler {
-        @Nullable CommandResult handle(TelegramMessage message) throws ReflectiveOperationException;
+    public Method getProtoMethod() {
+        return protoMethod;
+    }
+
+    @Override
+    public MethodParameter getReturnType() {
+        return returnType;
     }
 
     private static MethodParameter[] methodParameters(Method method) {

@@ -2,6 +2,7 @@ package com.demkom58.telegram.mvc.controller;
 
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.core.MethodParameter;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public interface TelegramMessageHandler {
@@ -9,4 +10,6 @@ public interface TelegramMessageHandler {
     Object invoke(TelegramMessage message, AbsSender bot, Object... providedArgs) throws Exception;
 
     HandlerMapping getMapping();
+
+    MethodParameter getReturnType();
 }

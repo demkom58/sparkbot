@@ -16,14 +16,6 @@ public class TelegramLongPollingMvcBot extends TelegramLongPollingBot {
         this.botUsername = botUsername;
         this.botToken = botToken;
         this.container = container;
-
-        container.setExecutor(botApiMethod -> {
-            try {
-                this.execute(botApiMethod);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Override

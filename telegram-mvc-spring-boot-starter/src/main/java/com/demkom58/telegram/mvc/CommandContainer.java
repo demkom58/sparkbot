@@ -3,12 +3,14 @@ package com.demkom58.telegram.mvc;
 import com.demkom58.telegram.mvc.controller.HandlerMapping;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandler;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
+import com.demkom58.telegram.mvc.controller.result.HandlerMethodReturnValueHandlerComposite;
 import com.demkom58.telegram.mvc.message.MessageType;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.core.MethodParameter;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -34,15 +36,16 @@ public class CommandContainer {
                     put(value, Maps.newHashMap());
             }});
 
-    private final CommandInterceptorStorage interceptorStorage;
-    private Consumer<BotApiMethod<?>> executor = (m) -> {
-    };
     private final PathMatcher pathMatcher;
 
-    public CommandContainer(@NotNull final CommandInterceptorStorage interceptorStorage,
-                            @NotNull final PathMatcher pathMatcher) {
-        this.interceptorStorage = interceptorStorage;
+    private HandlerMethodReturnValueHandlerComposite returnValueHandlers = new HandlerMethodReturnValueHandlerComposite();
+
+    public CommandContainer(@NotNull final PathMatcher pathMatcher) {
         this.pathMatcher = pathMatcher;
+    }
+
+    public void setReturnValueHandlers(HandlerMethodReturnValueHandlerComposite returnValueHandlers) {
+        this.returnValueHandlers = returnValueHandlers;
     }
 
     public void addBotController(String path, TelegramMessageHandlerMethod controller) {
@@ -83,54 +86,28 @@ public class CommandContainer {
             return;
         }
 
-        final User fromUser = message.getFromUser();
-        if (fromUser != null) {
-            final Optional<CommandResult> commandResult = interceptorStorage.processIntercept(fromUser, update);
-            if (commandResult.isPresent()) {
-                final CommandResult interceptorResult = commandResult.get().intercept(update);
-                interceptorResult.execute(executor);
-
-                if (!interceptorResult.isSaveOld()) {
-                    interceptorStorage.drop(fromUser);
-                }
-
-                if (interceptorResult.getInterceptor() != null) {
-                    interceptorStorage.add(fromUser, interceptorResult);
-                }
-
-                return;
-            }
-        }
-
         final String messageText = message.getText();
         TelegramMessageHandler handler = findControllers(eventType, messageText);
         if (handler == null) {
             return;
         }
 
-        final Map<String, String> variables = pathMatcher.extractUriTemplateVariables(
-                handler.getMapping().value(),
-                messageText
-        );
+        final Map<String, String> variables = pathMatcher
+                .extractUriTemplateVariables(handler.getMapping().value(), messageText);
 
         message.setAttribute("variables", variables);
-        final Object invoke = handler.invoke(message, bot, message, bot);
-        if (invoke == null) {
+        final Object result = handler.invoke(message, bot, message, bot);
+        if (result == null) {
             return;
         }
 
-        final CommandResult result;
-        if (invoke instanceof SendMessage sendMessage) {
-            result = CommandResult.simple(sendMessage);
-        } else if (invoke instanceof CommandResult commandResult) {
-            result = commandResult;
+        final MethodParameter returnType = handler.getReturnType();
+        final boolean supported = returnValueHandlers.isSupported(returnType);
+        if (supported) {
+            returnValueHandlers.handle(returnType, message, bot, result);
         } else {
-            throw new IllegalArgumentException("Unsupported method result '" + invoke.getClass().getName() + "' received!");
-        }
-
-        result.execute(executor);
-        if (fromUser != null && result.getInterceptor() != null) {
-            interceptorStorage.add(fromUser, result);
+            throw new UnsupportedOperationException("Unsupported return type '" +
+                    returnType.getParameterType().getName() + "' in method '" + returnType.getMethod() + "'");
         }
     }
 
@@ -164,10 +141,5 @@ public class CommandContainer {
         }
 
         return null;
-    }
-
-    public void setExecutor(Consumer<BotApiMethod<?>> executor) {
-        this.executor = executor;
-        this.interceptorStorage.setExecutor(executor);
     }
 }
