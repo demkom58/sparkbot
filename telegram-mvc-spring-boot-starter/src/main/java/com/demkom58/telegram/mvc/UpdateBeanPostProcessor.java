@@ -2,6 +2,8 @@ package com.demkom58.telegram.mvc;
 
 import com.demkom58.telegram.mvc.annotations.BotController;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.config.PathMatchingConfigurer;
+import com.demkom58.telegram.mvc.config.TelegramMvcConfigurerComposite;
 import com.demkom58.telegram.mvc.controller.HandlerMapping;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
 import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolver;
@@ -14,14 +16,14 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.*;
 
-@Component
 public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     private final Map<String, Class<?>> botControllerMap = new HashMap<>();
+
+    private final PathMatchingConfigurer pathMatchingConfigurer = new PathMatchingConfigurer();
 
     private final CommandContainer container;
 
@@ -31,15 +33,19 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     private final HandlerMethodReturnValueHandlerComposite returnValueHandlers
             = new HandlerMethodReturnValueHandlerComposite();
 
-    public UpdateBeanPostProcessor(CommandContainer container,
-                                   List<HandlerMethodArgumentResolver> argumentResolvers,
-                                   List<HandlerMethodReturnValueHandler> returnValueHandlers) {
-        this.container = container;
-        this.argumentResolvers.addAll(argumentResolvers);
-        this.argumentResolvers.addAll(createArgumentResolvers());
-        this.returnValueHandlers.addAll(returnValueHandlers);
-        this.returnValueHandlers.addAll(createReturnValueHandlers());
+    public UpdateBeanPostProcessor(TelegramMvcConfigurerComposite configurerComposite) {
+        List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
+        configurerComposite.configureArgumentResolvers(resolvers);
+        resolvers.addAll(createArgumentResolvers());
+        this.argumentResolvers.addAll(resolvers);
 
+        List<HandlerMethodReturnValueHandler> returnHandlers = new ArrayList<>();
+        configurerComposite.configureReturnValueHandlers(returnHandlers);
+        returnHandlers.addAll(createReturnValueHandlers());
+        this.returnValueHandlers.addAll(returnHandlers);
+
+        configurerComposite.configurePathMatcher(this.pathMatchingConfigurer);
+        this.container = new CommandContainer(this.pathMatchingConfigurer);
         container.setReturnValueHandlers(this.returnValueHandlers);
     }
 

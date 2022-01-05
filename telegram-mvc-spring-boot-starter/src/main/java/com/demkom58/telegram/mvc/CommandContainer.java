@@ -1,5 +1,6 @@
 package com.demkom58.telegram.mvc;
 
+import com.demkom58.telegram.mvc.config.PathMatchingConfigurer;
 import com.demkom58.telegram.mvc.controller.HandlerMapping;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandler;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
@@ -32,12 +33,14 @@ public class CommandContainer {
                     put(value, Maps.newHashMap());
             }});
 
+    private final PathMatchingConfigurer pathMatchingConfigurer;
     private final PathMatcher pathMatcher;
 
     private HandlerMethodReturnValueHandlerComposite returnValueHandlers = new HandlerMethodReturnValueHandlerComposite();
 
-    public CommandContainer(@NotNull final PathMatcher pathMatcher) {
-        this.pathMatcher = pathMatcher;
+    public CommandContainer(@NotNull final PathMatchingConfigurer pathMatchingConfigurer) {
+        this.pathMatchingConfigurer = pathMatchingConfigurer;
+        this.pathMatcher = pathMatchingConfigurer.getPathMatcher();
     }
 
     public void setReturnValueHandlers(HandlerMethodReturnValueHandlerComposite returnValueHandlers) {
