@@ -1,4 +1,4 @@
-package com.demkom58.telegram.mvc.annotations;
+package com.demkom58.telegram.mvc.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

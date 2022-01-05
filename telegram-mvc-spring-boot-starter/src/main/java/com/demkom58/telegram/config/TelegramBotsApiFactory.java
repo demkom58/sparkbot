@@ -1,4 +1,4 @@
-package com.demkom58.telegram.core;
+package com.demkom58.telegram.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.demkom58.telegram.core;
+package com.demkom58.telegram.config;
 
 import com.demkom58.telegram.TelegramLongPollingMvcBot;
 import com.demkom58.telegram.mvc.CommandContainer;

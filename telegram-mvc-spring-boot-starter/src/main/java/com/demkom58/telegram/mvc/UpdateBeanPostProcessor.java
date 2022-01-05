@@ -1,7 +1,7 @@
 package com.demkom58.telegram.mvc;
 
-import com.demkom58.telegram.mvc.annotations.BotController;
-import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.annotation.BotController;
+import com.demkom58.telegram.mvc.annotation.CommandMapping;
 import com.demkom58.telegram.mvc.config.PathMatchingConfigurer;
 import com.demkom58.telegram.mvc.config.TelegramMvcConfigurerComposite;
 import com.demkom58.telegram.mvc.controller.HandlerMapping;
@@ -16,7 +16,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.NonNullApi;
 
 import java.lang.reflect.Method;
 import java.util.*;

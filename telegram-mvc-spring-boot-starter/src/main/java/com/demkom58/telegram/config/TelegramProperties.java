@@ -1,4 +1,4 @@
-package com.demkom58.telegram.core;
+package com.demkom58.telegram.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

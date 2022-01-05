@@ -1,4 +1,4 @@
-package com.demkom58.telegram.mvc.annotations;
+package com.demkom58.telegram.mvc.annotation;
 
 import com.demkom58.telegram.mvc.message.MessageType;
 

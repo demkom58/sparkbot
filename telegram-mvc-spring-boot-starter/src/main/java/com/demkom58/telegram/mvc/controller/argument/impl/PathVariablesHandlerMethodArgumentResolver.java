@@ -1,6 +1,6 @@
 package com.demkom58.telegram.mvc.controller.argument.impl;
 
-import com.demkom58.telegram.mvc.annotations.PathVariable;
+import com.demkom58.telegram.mvc.annotation.PathVariable;
 import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolver;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import org.springframework.core.MethodParameter;

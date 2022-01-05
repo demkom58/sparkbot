@@ -1,7 +1,7 @@
 package com.demkom58.spark.controller;
 
-import com.demkom58.telegram.mvc.annotations.BotController;
-import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.annotation.BotController;
+import com.demkom58.telegram.mvc.annotation.CommandMapping;
 import com.demkom58.telegram.mvc.message.MessageType;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
