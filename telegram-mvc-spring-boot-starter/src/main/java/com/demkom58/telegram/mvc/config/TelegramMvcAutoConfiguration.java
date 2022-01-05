@@ -1,7 +1,6 @@
 package com.demkom58.telegram.mvc.config;
 
 import com.demkom58.telegram.mvc.CommandContainer;
-import com.demkom58.telegram.mvc.CommandInterceptorStorage;
 import com.demkom58.telegram.mvc.UpdateBeanPostProcessor;
 import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolver;
 import com.demkom58.telegram.mvc.controller.result.HandlerMethodReturnValueHandler;

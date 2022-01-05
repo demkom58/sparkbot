@@ -1,6 +1,5 @@
 package com.demkom58.telegram.mvc.controller;
 
-import com.demkom58.telegram.mvc.CommandResult;
 import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolverComposite;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import lombok.extern.slf4j.Slf4j;

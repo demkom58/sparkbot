@@ -13,15 +13,11 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Consumer;
 
 @Slf4j
 public class CommandContainer {
