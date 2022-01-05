@@ -1,6 +1,6 @@
 package com.demkom58.telegram.mvc;
 
-import org.jetbrains.annotations.Nullable;
+import org.springframework.lang.Nullable;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;

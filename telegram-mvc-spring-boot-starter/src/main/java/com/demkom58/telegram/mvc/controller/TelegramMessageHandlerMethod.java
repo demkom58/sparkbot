@@ -7,6 +7,7 @@ import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
@@ -50,7 +51,7 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
     }
 
     @Nullable
-    public Object invoke(TelegramMessage message, AbsSender bot, Object... providedArgs) throws Exception {
+    public Object invoke(@NonNull TelegramMessage message, @NonNull AbsSender bot, Object... providedArgs) throws Exception {
         Object[] args = getMethodArgumentValues(message, bot, providedArgs);
         if (log.isTraceEnabled()) {
             log.trace("Arguments: " + Arrays.toString(args));

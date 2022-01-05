@@ -10,8 +10,8 @@ import com.demkom58.telegram.mvc.message.TelegramMessage;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
+import org.springframework.lang.NonNull;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -38,16 +38,19 @@ public class CommandContainer {
 
     private HandlerMethodReturnValueHandlerComposite returnValueHandlers = new HandlerMethodReturnValueHandlerComposite();
 
-    public CommandContainer(@NotNull final PathMatchingConfigurer pathMatchingConfigurer) {
+    public CommandContainer(final PathMatchingConfigurer pathMatchingConfigurer) {
+        Objects.requireNonNull(pathMatchingConfigurer, "PathMatchingConfigurer can't be null!");
+
         this.pathMatchingConfigurer = pathMatchingConfigurer;
         this.pathMatcher = pathMatchingConfigurer.getPathMatcher();
     }
 
-    public void setReturnValueHandlers(HandlerMethodReturnValueHandlerComposite returnValueHandlers) {
+    public void setReturnValueHandlers(final HandlerMethodReturnValueHandlerComposite returnValueHandlers) {
         this.returnValueHandlers = returnValueHandlers;
     }
 
-    public void addBotController(String path, TelegramMessageHandlerMethod controller) {
+    public void addBotController(final String path,
+                                 final TelegramMessageHandlerMethod controller) {
         final HandlerMapping mapping = controller.getMapping();
         final Method mtd = controller.getMethod();
         final MessageType[] eventTypes = mapping.messageTypes();
@@ -78,7 +81,10 @@ public class CommandContainer {
     }
 
     @SneakyThrows
-    public void handle(@NotNull final Update update, @NotNull final AbsSender bot) {
+    public void handle(@NonNull final Update update, @NonNull final AbsSender bot) {
+        Objects.requireNonNull(update, "Update can't be null!");
+        Objects.requireNonNull(bot, "Receiver bot can't be null!");
+
         final TelegramMessage message = TelegramMessage.from(update);
         final MessageType eventType = message.getEventType();
         if (eventType == null) {
@@ -110,7 +116,7 @@ public class CommandContainer {
         }
     }
 
-    private TelegramMessageHandler findControllers(MessageType method, String message) {
+    private TelegramMessageHandler findControllers(final MessageType method, final String message) {
         if (StringUtils.hasText(message)) {
             var directHandler = directMap.get(method).get(message.toLowerCase());
             if (directHandler != null) {

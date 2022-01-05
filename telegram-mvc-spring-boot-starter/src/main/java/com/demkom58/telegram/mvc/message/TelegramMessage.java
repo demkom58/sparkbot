@@ -2,7 +2,7 @@ package com.demkom58.telegram.mvc.message;
 
 import lombok.Data;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Data
 @ToString
@@ -34,7 +35,9 @@ public class TelegramMessage {
         this.text = text;
     }
 
-    public static TelegramMessage from(@NotNull final Update update) {
+    public static TelegramMessage from(@NonNull final Update update) {
+        Objects.requireNonNull(update, "Update object can't be null!");
+
         MessageType eventType = null;
         User fromUser = null;
         Long chatId = null;

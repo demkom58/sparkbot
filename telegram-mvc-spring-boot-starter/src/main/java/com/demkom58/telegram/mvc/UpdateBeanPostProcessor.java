@@ -12,10 +12,11 @@ import com.demkom58.telegram.mvc.controller.argument.impl.PathVariablesHandlerMe
 import com.demkom58.telegram.mvc.controller.result.HandlerMethodReturnValueHandler;
 import com.demkom58.telegram.mvc.controller.result.HandlerMethodReturnValueHandlerComposite;
 import com.demkom58.telegram.mvc.controller.result.impl.SendMessageHandlerMethodReturnValueHandler;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.NonNullApi;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -62,7 +63,8 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     }
 
     @Override
-    public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(@NonNull Object bean,
+                                                  @NonNull String beanName) throws BeansException {
         final Class<?> beanClass = bean.getClass();
 
         if (beanClass.isAnnotationPresent(BotController.class))
@@ -72,7 +74,8 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     }
 
     @Override
-    public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(@NonNull Object bean,
+                                                 @NonNull String beanName) throws BeansException {
         final Class<?> original = botControllerMap.get(beanName);
         if (original == null)
             return bean;
@@ -84,7 +87,7 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
         return bean;
     }
 
-    private void generateController(@NotNull Object bean, @NotNull Method method) {
+    private void generateController(Object bean, Method method) {
         final BotController botController = bean.getClass().getAnnotation(BotController.class);
         final CommandMapping mapping = method.getAnnotation(CommandMapping.class);
 
