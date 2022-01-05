@@ -1,7 +1,7 @@
 package com.demkom58.telegram.mvc.controller;
 
 import com.demkom58.telegram.mvc.CommandResult;
-import com.demkom58.telegram.mvc.controller.argument.CachedHandlerMethodArgumentResolvers;
+import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolverComposite;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.BridgeMethodResolver;
@@ -11,15 +11,11 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 @Slf4j
 public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
@@ -33,7 +29,7 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
     private final MethodParameter[] parameters;
 
     private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
-    private CachedHandlerMethodArgumentResolvers resolvers = new CachedHandlerMethodArgumentResolvers();
+    private HandlerMethodArgumentResolverComposite resolvers = new HandlerMethodArgumentResolverComposite();
 
     public TelegramMessageHandlerMethod(HandlerMapping mapping, Object bean, Method method) {
         this.mapping = mapping;
@@ -48,7 +44,7 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         this.parameterNameDiscoverer = parameterNameDiscoverer;
     }
 
-    public void setResolvers(CachedHandlerMethodArgumentResolvers resolvers) {
+    public void setResolvers(HandlerMethodArgumentResolverComposite resolvers) {
         this.resolvers = resolvers;
     }
 

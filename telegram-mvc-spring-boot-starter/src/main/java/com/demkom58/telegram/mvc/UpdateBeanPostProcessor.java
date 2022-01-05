@@ -4,7 +4,7 @@ import com.demkom58.telegram.mvc.annotations.BotController;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import com.demkom58.telegram.mvc.controller.HandlerMapping;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
-import com.demkom58.telegram.mvc.controller.argument.CachedHandlerMethodArgumentResolvers;
+import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolverComposite;
 import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolver;
 import com.demkom58.telegram.mvc.controller.argument.impl.PathVariablesHandlerMethodArgumentResolver;
 import org.jetbrains.annotations.NotNull;
@@ -20,13 +20,13 @@ import java.util.*;
 public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     private final Map<String, Class<?>> botControllerMap = new HashMap<>();
     private final CommandContainer container;
-    private final CachedHandlerMethodArgumentResolvers argumentResolvers = new CachedHandlerMethodArgumentResolvers();
+    private final HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
 
     public UpdateBeanPostProcessor(CommandContainer container,
                                    List<HandlerMethodArgumentResolver> argumentResolvers) {
         this.container = container;
-        this.argumentResolvers.addResolvers(createArgumentResolvers());
-        this.argumentResolvers.addResolvers(argumentResolvers);
+        this.argumentResolvers.addAll(createArgumentResolvers());
+        this.argumentResolvers.addAll(argumentResolvers);
     }
 
     private List<HandlerMethodArgumentResolver> createArgumentResolvers() {

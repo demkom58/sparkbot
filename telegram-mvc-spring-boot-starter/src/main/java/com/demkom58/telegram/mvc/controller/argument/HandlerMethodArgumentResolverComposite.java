@@ -7,19 +7,19 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CachedHandlerMethodArgumentResolvers implements HandlerMethodArgumentResolver {
+public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgumentResolver {
     private final List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
     private final Map<MethodParameter, HandlerMethodArgumentResolver> cachedResolvers = new ConcurrentHashMap<>();
 
-    public void addResolver(HandlerMethodArgumentResolver resolver) {
+    public void add(HandlerMethodArgumentResolver resolver) {
         this.resolvers.add(resolver);
     }
 
-    public void addResolvers(HandlerMethodArgumentResolver... resolvers) {
+    public void addAll(HandlerMethodArgumentResolver... resolvers) {
         this.resolvers.addAll(Arrays.asList(resolvers));
     }
 
-    public void addResolvers(Collection<HandlerMethodArgumentResolver> resolvers) {
+    public void addAll(Collection<HandlerMethodArgumentResolver> resolvers) {
         this.resolvers.addAll(resolvers);
     }
 
