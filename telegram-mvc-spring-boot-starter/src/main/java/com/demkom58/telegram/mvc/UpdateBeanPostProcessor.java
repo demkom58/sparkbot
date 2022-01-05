@@ -35,10 +35,10 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
                                    List<HandlerMethodArgumentResolver> argumentResolvers,
                                    List<HandlerMethodReturnValueHandler> returnValueHandlers) {
         this.container = container;
-        this.argumentResolvers.addAll(createArgumentResolvers());
         this.argumentResolvers.addAll(argumentResolvers);
-        this.returnValueHandlers.addAll(createReturnValueHandlers());
+        this.argumentResolvers.addAll(createArgumentResolvers());
         this.returnValueHandlers.addAll(returnValueHandlers);
+        this.returnValueHandlers.addAll(createReturnValueHandlers());
 
         container.setReturnValueHandlers(this.returnValueHandlers);
     }
