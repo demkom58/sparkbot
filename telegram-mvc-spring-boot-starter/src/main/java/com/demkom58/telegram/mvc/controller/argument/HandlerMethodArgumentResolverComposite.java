@@ -2,6 +2,7 @@ package com.demkom58.telegram.mvc.controller.argument;
 
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import org.springframework.core.MethodParameter;
+import org.springframework.lang.Nullable;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.util.*;
@@ -29,6 +30,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
     }
 
     @Override
+    @Nullable
     public Object resolve(MethodParameter parameter, TelegramMessage message, AbsSender bot) throws Exception {
         final HandlerMethodArgumentResolver resolver = getArgumentResolver(parameter);
         if (resolver == null) {
@@ -40,6 +42,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
         return resolver.resolve(parameter, message, bot);
     }
 
+    @Nullable
     private HandlerMethodArgumentResolver getArgumentResolver(MethodParameter parameter) {
         final HandlerMethodArgumentResolver cached = cachedResolvers.get(parameter);
 

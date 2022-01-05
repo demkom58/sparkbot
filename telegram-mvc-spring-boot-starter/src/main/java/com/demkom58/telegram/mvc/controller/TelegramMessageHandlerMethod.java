@@ -7,7 +7,6 @@ import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
@@ -51,7 +50,7 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
     }
 
     @Nullable
-    public Object invoke(@NonNull TelegramMessage message, @NonNull AbsSender bot, Object... providedArgs) throws Exception {
+    public Object invoke(TelegramMessage message, AbsSender bot, Object... providedArgs) throws Exception {
         Object[] args = getMethodArgumentValues(message, bot, providedArgs);
         if (log.isTraceEnabled()) {
             log.trace("Arguments: " + Arrays.toString(args));
@@ -81,7 +80,6 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
             try {
                 args[i] = this.resolvers.resolve(parameter, message, bot);
             } catch (Exception ex) {
-                // Leave stack trace for later, exception may actually be resolved and handled...
                 if (log.isDebugEnabled()) {
                     String exMsg = ex.getMessage();
                     if (exMsg != null && !exMsg.contains(parameter.getExecutable().toGenericString())) {
@@ -100,19 +98,17 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         try {
             return protoMethod.invoke(bean, args);
         } catch (IllegalArgumentException ex) {
-            String text = (ex.getMessage() != null ? ex.getMessage() : "Illegal argument");
-            throw new IllegalStateException(text, ex);
+            throw new IllegalStateException(ex.getMessage() != null ? ex.getMessage() : "Illegal argument", ex);
         } catch (InvocationTargetException ex) {
-            // Unwrap for HandlerExceptionResolvers ...
-            Throwable targetException = ex.getTargetException();
-            if (targetException instanceof RuntimeException exr) {
+            Throwable targetEx = ex.getTargetException();
+            if (targetEx instanceof RuntimeException exr) {
                 throw exr;
-            } else if (targetException instanceof Error err) {
+            } else if (targetEx instanceof Error err) {
                 throw err;
-            } else if (targetException instanceof Exception exr) {
+            } else if (targetEx instanceof Exception exr) {
                 throw exr;
             } else {
-                throw new IllegalStateException("Invocation failure", targetException);
+                throw new IllegalStateException("Invocation failure", targetEx);
             }
         }
     }

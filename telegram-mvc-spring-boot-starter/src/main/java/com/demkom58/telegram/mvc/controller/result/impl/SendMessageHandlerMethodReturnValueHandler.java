@@ -13,7 +13,8 @@ public class SendMessageHandlerMethodReturnValueHandler implements HandlerMethod
     }
 
     @Override
-    public void handle(MethodParameter returnType, TelegramMessage message, AbsSender bot, Object result) throws Exception {
+    public void handle(MethodParameter returnType, TelegramMessage message, AbsSender bot, Object result)
+            throws Exception {
         final SendMessage sm = (SendMessage) result;
         bot.execute(sm);
     }

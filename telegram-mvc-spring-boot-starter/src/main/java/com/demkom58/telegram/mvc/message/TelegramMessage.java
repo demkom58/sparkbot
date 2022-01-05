@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -35,16 +36,12 @@ public class TelegramMessage {
         this.text = text;
     }
 
-    public static TelegramMessage from(@NonNull final Update update) {
+    @Nullable
+    public static TelegramMessage from(Update update) {
         Objects.requireNonNull(update, "Update object can't be null!");
 
-        MessageType eventType = null;
-        User fromUser = null;
-        Long chatId = null;
-        Chat chat = null;
-        String text = null;
-
-        Message message = null;
+        final MessageType eventType;
+        final Message message;
 
         if (update.hasMessage()) {
             eventType = MessageType.TEXT_MESSAGE;
@@ -58,13 +55,24 @@ public class TelegramMessage {
         } else if (update.hasEditedChannelPost()) {
             eventType = MessageType.TEXT_POST_EDIT;
             message = update.getEditedChannelPost();
+        } else {
+            return null;
         }
+
+        User fromUser = null;
+        Long chatId = null;
+        Chat chat = null;
+        String text = null;
 
         if (message != null) {
             fromUser = message.getFrom();
             chatId = message.getChatId();
             chat = message.getChat();
             text = message.getText();
+        }
+
+        if (fromUser == null || chatId == null || text == null) {
+            return null;
         }
 
         return new TelegramMessage(update, eventType, fromUser, chatId, chat, text);

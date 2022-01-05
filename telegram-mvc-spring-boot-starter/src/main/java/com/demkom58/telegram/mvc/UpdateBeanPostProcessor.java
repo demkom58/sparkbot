@@ -63,8 +63,7 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     }
 
     @Override
-    public Object postProcessBeforeInitialization(@NonNull Object bean,
-                                                  @NonNull String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         final Class<?> beanClass = bean.getClass();
 
         if (beanClass.isAnnotationPresent(BotController.class))
@@ -74,8 +73,7 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     }
 
     @Override
-    public Object postProcessAfterInitialization(@NonNull Object bean,
-                                                 @NonNull String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         final Class<?> original = botControllerMap.get(beanName);
         if (original == null)
             return bean;
