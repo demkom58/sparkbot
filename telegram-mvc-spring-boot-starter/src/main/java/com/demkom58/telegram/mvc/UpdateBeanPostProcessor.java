@@ -4,6 +4,9 @@ import com.demkom58.telegram.mvc.annotations.BotController;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import com.demkom58.telegram.mvc.controller.HandlerMapping;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
+import com.demkom58.telegram.mvc.controller.argument.CachedHandlerMethodArgumentResolvers;
+import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolver;
+import com.demkom58.telegram.mvc.controller.argument.impl.PathVariablesHandlerMethodArgumentResolver;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -17,9 +20,19 @@ import java.util.*;
 public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
     private final Map<String, Class<?>> botControllerMap = new HashMap<>();
     private final CommandContainer container;
+    private final CachedHandlerMethodArgumentResolvers argumentResolvers = new CachedHandlerMethodArgumentResolvers();
 
-    public UpdateBeanPostProcessor(CommandContainer container) {
+    public UpdateBeanPostProcessor(CommandContainer container,
+                                   List<HandlerMethodArgumentResolver> argumentResolvers) {
         this.container = container;
+        this.argumentResolvers.addResolvers(createArgumentResolvers());
+        this.argumentResolvers.addResolvers(argumentResolvers);
+    }
+
+    private List<HandlerMethodArgumentResolver> createArgumentResolvers() {
+        return Arrays.asList(
+                new PathVariablesHandlerMethodArgumentResolver()
+        );
     }
 
     @Override
@@ -62,6 +75,7 @@ public class UpdateBeanPostProcessor implements BeanPostProcessor, Ordered {
         for (String path : paths) {
             final var handlerMapping = new HandlerMapping(mapping.event(), path);
             final var handlerMethod = new TelegramMessageHandlerMethod(handlerMapping, bean, method);
+            handlerMethod.setResolvers(argumentResolvers);
             container.addBotController(path, handlerMethod);
         }
 

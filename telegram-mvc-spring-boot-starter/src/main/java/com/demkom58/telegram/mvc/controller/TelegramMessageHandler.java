@@ -1,13 +1,12 @@
 package com.demkom58.telegram.mvc.controller;
 
-import com.demkom58.telegram.mvc.CommandResult;
-import com.demkom58.telegram.mvc.annotations.CommandMapping;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import org.jetbrains.annotations.Nullable;
+import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public interface TelegramMessageHandler {
     @Nullable
-    CommandResult handle(TelegramMessage message);
+    Object invoke(TelegramMessage message, AbsSender bot, Object... providedArgs) throws Exception;
 
     HandlerMapping getMapping();
 }

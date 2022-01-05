@@ -6,13 +6,16 @@ import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
 import com.demkom58.telegram.mvc.message.MessageType;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import com.google.common.collect.Maps;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -72,7 +75,8 @@ public class CommandContainer {
         }
     }
 
-    public void handle(@NotNull final Update update) {
+    @SneakyThrows
+    public void handle(@NotNull final Update update, @NotNull final AbsSender bot) {
         final TelegramMessage message = TelegramMessage.from(update);
         final MessageType eventType = message.getEventType();
         if (eventType == null) {
@@ -110,9 +114,18 @@ public class CommandContainer {
         );
 
         message.setAttribute("variables", variables);
-        CommandResult result = handler.handle(message);
-        if (result == null) {
+        final Object invoke = handler.invoke(message, bot, message, bot);
+        if (invoke == null) {
             return;
+        }
+
+        final CommandResult result;
+        if (invoke instanceof SendMessage sendMessage) {
+            result = CommandResult.simple(sendMessage);
+        } else if (invoke instanceof CommandResult commandResult) {
+            result = commandResult;
+        } else {
+            throw new IllegalArgumentException("Unsupported method result '" + invoke.getClass().getName() + "' received!");
         }
 
         result.execute(executor);

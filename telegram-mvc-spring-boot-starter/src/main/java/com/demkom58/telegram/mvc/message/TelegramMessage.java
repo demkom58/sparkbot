@@ -73,6 +73,6 @@ public class TelegramMessage {
 
     @Nullable
     public Object getAttribute(String attributeName) {
-        return attributes;
+        return attributes.get(attributeName);
     }
 }

@@ -1,27 +1,39 @@
 package com.demkom58.telegram.mvc.controller;
 
 import com.demkom58.telegram.mvc.CommandResult;
-import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.controller.argument.CachedHandlerMethodArgumentResolvers;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.core.BridgeMethodResolver;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 @Slf4j
 public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
+    private static final Object[] EMPTY_ARGS = new Object[0];
+
     private final HandlerMapping mapping;
     private final Object bean;
     private final Method method;
     private final Method protoMethod;
 
-    private final Handler handler;
+    private final MethodParameter[] parameters;
+
+    private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+    private CachedHandlerMethodArgumentResolvers resolvers = new CachedHandlerMethodArgumentResolvers();
 
     public TelegramMessageHandlerMethod(HandlerMapping mapping, Object bean, Method method) {
         this.mapping = mapping;
@@ -29,46 +41,82 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         this.method = method;
         this.protoMethod = BridgeMethodResolver.findBridgedMethod(method);
         ReflectionUtils.makeAccessible(protoMethod);
-        this.handler = createHandler();
+        this.parameters = methodParameters(method);
     }
 
-    @Override
+    public void setParameterNameDiscoverer(ParameterNameDiscoverer parameterNameDiscoverer) {
+        this.parameterNameDiscoverer = parameterNameDiscoverer;
+    }
+
+    public void setResolvers(CachedHandlerMethodArgumentResolvers resolvers) {
+        this.resolvers = resolvers;
+    }
+
     @Nullable
-    public CommandResult handle(TelegramMessage message) {
-        try {
-            return handler.handle(message);
-        } catch (ReflectiveOperationException e) {
-            log.error("bad invoke method", e);
+    public Object invoke(TelegramMessage message, AbsSender bot, Object... providedArgs) throws Exception {
+        Object[] args = getMethodArgumentValues(message, bot, providedArgs);
+        if (log.isTraceEnabled()) {
+            log.trace("Arguments: " + Arrays.toString(args));
         }
-        return null;
+
+        return doInvoke(args);
     }
 
-    public Handler createHandler() {
-        final Method method = protoMethod;
-        final Class<?> returnType = method.getReturnType();
+    protected Object[] getMethodArgumentValues(TelegramMessage message, AbsSender bot, Object... providedArgs) throws Exception {
+        if (ObjectUtils.isEmpty(parameters)) {
+            return EMPTY_ARGS;
+        }
 
-        if (CommandResult.class.isAssignableFrom(returnType))
-            return (message) -> (CommandResult) method.invoke(bean, message);
+        Object[] args = new Object[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            MethodParameter parameter = parameters[i];
+            parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
+            args[i] = findProvidedArgument(parameter, providedArgs);
+            if (args[i] != null) {
+                continue;
+            }
 
-        if (BotApiMethod.class.isAssignableFrom(returnType))
-            return (message) -> CommandResult.simple((BotApiMethod<?>) method.invoke(bean, message));
+            if (!this.resolvers.isSupported(parameter)) {
+                throw new IllegalStateException("Resolver supporting '" + parameter + "' not found!");
+            }
 
-        if (Collection.class.isAssignableFrom(returnType)) {
-            ParameterizedType collectionType = (ParameterizedType) method.getGenericReturnType();
-            ParameterizedType actualTypeArgument = (ParameterizedType) collectionType.getActualTypeArguments()[0];
             try {
-                if (BotApiMethod.class.isAssignableFrom(Class.forName(actualTypeArgument.getRawType().getTypeName())))
-                    return (message) -> new CommandResult(
-                            (List<BotApiMethod<?>>) method.invoke(bean, message), null, null, false
-                    );
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                args[i] = this.resolvers.resolve(parameter, message, bot);
+            } catch (Exception ex) {
+                // Leave stack trace for later, exception may actually be resolved and handled...
+                if (log.isDebugEnabled()) {
+                    String exMsg = ex.getMessage();
+                    if (exMsg != null && !exMsg.contains(parameter.getExecutable().toGenericString())) {
+                        log.debug("An error occurred while resolving parameter {}", parameter, ex);
+                    }
+                }
+                throw ex;
+            }
+
+        }
+        return args;
+    }
+
+    @Nullable
+    protected Object doInvoke(Object... args) throws Exception {
+        try {
+            return protoMethod.invoke(bean, args);
+        } catch (IllegalArgumentException ex) {
+            String text = (ex.getMessage() != null ? ex.getMessage() : "Illegal argument");
+            throw new IllegalStateException(text, ex);
+        } catch (InvocationTargetException ex) {
+            // Unwrap for HandlerExceptionResolvers ...
+            Throwable targetException = ex.getTargetException();
+            if (targetException instanceof RuntimeException exr) {
+                throw exr;
+            } else if (targetException instanceof Error err) {
+                throw err;
+            } else if (targetException instanceof Exception exr) {
+                throw exr;
+            } else {
+                throw new IllegalStateException("Invocation failure", targetException);
             }
         }
-
-        throw new IllegalArgumentException(
-                "Method '" + this.method.getName() + "' of class '" + bean.getClass().getName() + "' returns invalid type. "
-        );
     }
 
     @Override
@@ -82,6 +130,28 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
 
     public interface Handler {
         @Nullable CommandResult handle(TelegramMessage message) throws ReflectiveOperationException;
+    }
+
+    private static MethodParameter[] methodParameters(Method method) {
+        final int parameterCount = method.getParameterCount();
+        final MethodParameter[] params = new MethodParameter[parameterCount];
+        for (int i = 0; i < parameterCount; i++) {
+            params[i] = new MethodParameter(method, i);
+        }
+
+        return params;
+    }
+
+    @Nullable
+    protected static Object findProvidedArgument(MethodParameter parameter, @Nullable Object... providedArgs) {
+        if (!ObjectUtils.isEmpty(providedArgs)) {
+            for (Object providedArg : providedArgs) {
+                if (parameter.getParameterType().isInstance(providedArg)) {
+                    return providedArg;
+                }
+            }
+        }
+        return null;
     }
 
 }

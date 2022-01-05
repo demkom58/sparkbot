@@ -2,6 +2,7 @@ package com.demkom58.spark.controller;
 
 import com.demkom58.telegram.mvc.annotations.BotController;
 import com.demkom58.telegram.mvc.annotations.CommandMapping;
+import com.demkom58.telegram.mvc.annotations.PathVariable;
 import com.demkom58.telegram.mvc.message.MessageType;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,10 +13,10 @@ public class SayController {
             value = {"/say {input}"},
             event = MessageType.TEXT_MESSAGE
     )
-    public SendMessage say(TelegramMessage message, String input) {
+    public SendMessage say(TelegramMessage message, @PathVariable String input) {
         return SendMessage.builder()
                 .chatId(String.valueOf(message.getChatId()))
-                .text("Говорю тебе: " + input)
+                .text(input)
                 .build();
     }
 }
