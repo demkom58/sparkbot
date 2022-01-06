@@ -4,6 +4,7 @@ import com.demkom58.telegram.mvc.config.PathMatchingConfigurer;
 import com.demkom58.telegram.mvc.controller.HandlerMapping;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandler;
 import com.demkom58.telegram.mvc.controller.TelegramMessageHandlerMethod;
+import com.demkom58.telegram.mvc.controller.argument.HandlerMethodArgumentResolverComposite;
 import com.demkom58.telegram.mvc.controller.result.HandlerMethodReturnValueHandlerComposite;
 import com.demkom58.telegram.mvc.message.MessageType;
 import com.demkom58.telegram.mvc.message.TelegramMessage;
@@ -36,6 +37,7 @@ public class CommandContainer {
     private PathMatchingConfigurer pathMatchingConfigurer;
 
     private HandlerMethodReturnValueHandlerComposite returnValueHandlers = new HandlerMethodReturnValueHandlerComposite();
+    private HandlerMethodArgumentResolverComposite argumentResolvers = new HandlerMethodArgumentResolverComposite();
 
     public PathMatchingConfigurer getPathMatchingConfigurer() {
         return pathMatchingConfigurer;
@@ -51,6 +53,14 @@ public class CommandContainer {
 
     public void setReturnValueHandlers(HandlerMethodReturnValueHandlerComposite returnValueHandlers) {
         this.returnValueHandlers = returnValueHandlers;
+    }
+
+    public HandlerMethodArgumentResolverComposite getArgumentResolvers() {
+        return argumentResolvers;
+    }
+
+    public void setArgumentResolvers(HandlerMethodArgumentResolverComposite argumentResolvers) {
+        this.argumentResolvers = argumentResolvers;
     }
 
     public void addBotController(String path, TelegramMessageHandlerMethod controller) {
@@ -105,7 +115,7 @@ public class CommandContainer {
                 .extractUriTemplateVariables(handler.getMapping().value(), messageText);
 
         message.setAttribute("variables", variables);
-        final Object result = handler.invoke(message, bot, message, bot);
+        final Object result = handler.invoke(argumentResolvers, message, bot, message, bot);
         if (result == null) {
             return;
         }
@@ -158,4 +168,5 @@ public class CommandContainer {
     public PathMatcher getPathMatcher() {
         return pathMatchingConfigurer.getPathMatcher();
     }
+
 }

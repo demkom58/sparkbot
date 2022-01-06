@@ -29,7 +29,6 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
     private final MethodParameter returnType;
 
     private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
-    private HandlerMethodArgumentResolverComposite resolvers = new HandlerMethodArgumentResolverComposite();
 
     public TelegramMessageHandlerMethod(HandlerMapping mapping, Object bean, Method method) {
         this.mapping = mapping;
@@ -45,13 +44,12 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         this.parameterNameDiscoverer = parameterNameDiscoverer;
     }
 
-    public void setResolvers(HandlerMethodArgumentResolverComposite resolvers) {
-        this.resolvers = resolvers;
-    }
-
     @Nullable
-    public Object invoke(TelegramMessage message, AbsSender bot, Object... providedArgs) throws Exception {
-        Object[] args = getMethodArgumentValues(message, bot, providedArgs);
+    public Object invoke(HandlerMethodArgumentResolverComposite resolvers,
+                         TelegramMessage message,
+                         AbsSender bot,
+                         Object... providedArgs) throws Exception {
+        Object[] args = getMethodArgumentValues(resolvers, message, bot, providedArgs);
         if (log.isTraceEnabled()) {
             log.trace("Arguments: " + Arrays.toString(args));
         }
@@ -59,7 +57,10 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         return doInvoke(args);
     }
 
-    protected Object[] getMethodArgumentValues(TelegramMessage message, AbsSender bot, Object... providedArgs) throws Exception {
+    protected Object[] getMethodArgumentValues(HandlerMethodArgumentResolverComposite resolvers,
+                                               TelegramMessage message,
+                                               AbsSender bot,
+                                               Object... providedArgs) throws Exception {
         if (ObjectUtils.isEmpty(parameters)) {
             return EMPTY_ARGS;
         }
@@ -73,12 +74,12 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
                 continue;
             }
 
-            if (!this.resolvers.isSupported(parameter)) {
+            if (!resolvers.isSupported(parameter)) {
                 throw new IllegalStateException("Resolver supporting '" + parameter + "' not found!");
             }
 
             try {
-                args[i] = this.resolvers.resolve(parameter, message, bot);
+                args[i] = resolvers.resolve(parameter, message, bot);
             } catch (Exception ex) {
                 if (log.isDebugEnabled()) {
                     String exMsg = ex.getMessage();
