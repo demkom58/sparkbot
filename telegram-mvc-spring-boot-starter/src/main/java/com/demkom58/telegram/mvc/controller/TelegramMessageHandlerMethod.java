@@ -51,7 +51,7 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
                          Object... providedArgs) throws Exception {
         Object[] args = getMethodArgumentValues(resolvers, message, bot, providedArgs);
         if (log.isTraceEnabled()) {
-            log.trace("Arguments: " + Arrays.toString(args));
+            log.trace("Arguments: {}", Arrays.toString(args));
         }
 
         return doInvoke(args);
@@ -65,12 +65,13 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
             return EMPTY_ARGS;
         }
 
-        Object[] args = new Object[parameters.length];
+        Object[] foundArgs = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             MethodParameter parameter = parameters[i];
             parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
-            args[i] = findProvidedArgument(parameter, providedArgs);
-            if (args[i] != null) {
+
+            foundArgs[i] = findArgument(parameter, providedArgs);
+            if (foundArgs[i] != null) {
                 continue;
             }
 
@@ -79,19 +80,14 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
             }
 
             try {
-                args[i] = resolvers.resolve(parameter, message, bot);
+                foundArgs[i] = resolvers.resolve(parameter, message, bot);
             } catch (Exception ex) {
-                if (log.isDebugEnabled()) {
-                    String exMsg = ex.getMessage();
-                    if (exMsg != null && !exMsg.contains(parameter.getExecutable().toGenericString())) {
-                        log.debug("An error occurred while resolving parameter {}", parameter, ex);
-                    }
-                }
+                log.debug("Failed to resolve parameter {}", parameter, ex);
                 throw ex;
             }
 
         }
-        return args;
+        return foundArgs;
     }
 
     @Nullable
@@ -99,18 +95,7 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
         try {
             return protoMethod.invoke(bean, args);
         } catch (IllegalArgumentException ex) {
-            throw new IllegalStateException(ex.getMessage() != null ? ex.getMessage() : "Illegal argument", ex);
-        } catch (InvocationTargetException ex) {
-            Throwable targetEx = ex.getTargetException();
-            if (targetEx instanceof RuntimeException exr) {
-                throw exr;
-            } else if (targetEx instanceof Error err) {
-                throw err;
-            } else if (targetEx instanceof Exception exr) {
-                throw exr;
-            } else {
-                throw new IllegalStateException("Invocation failure", targetEx);
-            }
+            throw new IllegalStateException(ex.getMessage() != null ? ex.getMessage() : "Illegal arguments passed", ex);
         }
     }
 
@@ -143,14 +128,18 @@ public class TelegramMessageHandlerMethod implements TelegramMessageHandler {
     }
 
     @Nullable
-    protected static Object findProvidedArgument(MethodParameter parameter, @Nullable Object... providedArgs) {
+    protected static Object findArgument(MethodParameter parameter, @Nullable Object... providedArgs) {
         if (!ObjectUtils.isEmpty(providedArgs)) {
+            final Class<?> parameterType = parameter.getParameterType();
+
             for (Object providedArg : providedArgs) {
-                if (parameter.getParameterType().isInstance(providedArg)) {
+                if (parameterType.isInstance(providedArg)) {
                     return providedArg;
                 }
             }
+
         }
+
         return null;
     }
 
