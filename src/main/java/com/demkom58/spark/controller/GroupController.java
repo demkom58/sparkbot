@@ -2,14 +2,14 @@ package com.demkom58.spark.controller;
 
 import com.demkom58.spark.entity.GroupAccess;
 import com.demkom58.spark.entity.User;
-import com.demkom58.spark.mvc.EventType;
-import com.demkom58.spark.mvc.annotations.BotController;
-import com.demkom58.spark.mvc.annotations.CommandMapping;
 import com.demkom58.spark.repo.GroupAccessRepository;
 import com.demkom58.spark.service.UserService;
+import com.demkom58.springram.controller.annotation.BotController;
+import com.demkom58.springram.controller.annotation.CommandMapping;
+import com.demkom58.springram.controller.message.MessageType;
+import com.demkom58.springram.controller.message.TelegramMessage;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Collection;
 import java.util.StringJoiner;
@@ -21,22 +21,20 @@ public class GroupController {
     private final UserService userService;
 
     @CommandMapping(
-            value = {"/groups", "Groups", "Группы"},
-            event = EventType.TEXT_MESSAGE
+            value = {"groups", "группы"},
+            event = MessageType.TEXT_MESSAGE
     )
-    public SendMessage groups(Update update) {
-        final var message = update.getMessage();
-        final var tgUser = message.getFrom();
-
+    public SendMessage groups(TelegramMessage message) {
         final Long chatId = message.getChatId();
-        final Integer authorId = tgUser.getId();
+        final Long authorId = message.getFromUser().getId();
 
         final User user = userService.getUser(authorId);
         final Collection<GroupAccess> accesses = groupAccessRepository.getAllByUser(user);
         if (accesses.isEmpty())
-            return new SendMessage()
-                    .setChatId(chatId)
-                    .setText("У тебя нет доступа ни к каким группам :(");
+            return SendMessage.builder()
+                    .chatId(String.valueOf(chatId))
+                    .text("У тебя нет доступа ни к каким группам :(")
+                    .build();
 
         final StringJoiner joiner = new StringJoiner("\n");
         joiner.add("Ты состоишь в группах:");
@@ -45,8 +43,9 @@ public class GroupController {
             joiner.add(group.getName() + "(#" + group.getId() + ")");
         });
 
-        return new SendMessage()
-                .setChatId(chatId)
-                .setText(joiner.toString());
+        return SendMessage.builder()
+                .chatId(String.valueOf(chatId))
+                .text(joiner.toString())
+                .build();
     }
 }

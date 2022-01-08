@@ -1,17 +1,17 @@
 bot:
   token: '${BOT_TOKEN}'
   username: '${BOT_USERNAME:workholder_bot}'
-  owner_id: ${OWNER_ID}
+  owner_id: '${OWNER_ID}'
 
 spring:
   datasource:
-    url: '${DB_URL}'
+    url: 'jdbc:postgresql://${DB_ADDRESS}/${DB_NAME}?currentSchema=${DB_DEFAULT_SCHEMA:public}'
     username: '${DB_USERNAME}'
     password: '${DB_PASSWORD}'
   jpa:
     properties:
       hibernate:
-        default_schema: '${DB_DEFAULT_SCHEMA:spark}'
+        default_schema: '${DB_DEFAULT_SCHEMA:public}'
         jdbc:
           time_zone: '${JDBC_TIMEZONE:UTC}'
     hibernate:

@@ -12,8 +12,8 @@
     },
     {
       "name": "bot.owner_id",
-      "type": "java.lang.Integer",
-      "description": "Telegram identifier of bot owner"
+      "type": "java.lang.Long",
+      "description": "Telegram identifier of bot owner."
     }
   ]
 }

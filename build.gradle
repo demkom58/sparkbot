@@ -1,7 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.3.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-    id "io.freefair.lombok" version "4.1.6"
+    id 'org.springframework.boot' version '2.6.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'application'
     id 'java'
 }
@@ -9,37 +8,38 @@ plugins {
 group 'com.demkom58'
 version '1.0-SNAPSHOT'
 
+bootJar {
+    mainClassName = 'com.demkom58.spark.SparkBotApplication'
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
+    implementation group: 'com.demkom58', name: 'springram', version: '0.1-SNAPSHOT'
+    implementation group: 'org.telegram', name: 'telegrambots', version: '5.5.0'
+
     implementation group: 'com.github.bgerstle', name: 'result-java', version: '0.0.1'
+    implementation group: 'org.jetbrains', name: 'annotations', version: '23.0.0'
 
-    compile group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
-
-    implementation group: 'com.github.xabgesagtx', name: 'telegram-spring-boot-starter', version: '0.22'
-
+    implementation group: 'org.postgresql', name: 'postgresql'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter'
 
-    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.21.Final'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
-
-compileJava {
-    sourceCompatibility = JavaVersion.VERSION_15
-    targetCompatibility = JavaVersion.VERSION_15
-}
-
-mainClassName = "com.demkom58.spark.SparkBotApplication"
-
-generateLombokConfig.enabled = false
-jar.enabled = true
-
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"

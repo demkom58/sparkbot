@@ -1,11 +1,10 @@
 package com.demkom58.spark.controller;
 
-import com.demkom58.spark.mvc.EventType;
-import com.demkom58.spark.mvc.annotations.BotController;
-import com.demkom58.spark.mvc.annotations.CommandMapping;
+import com.demkom58.springram.controller.annotation.BotController;
+import com.demkom58.springram.controller.annotation.CommandMapping;
+import com.demkom58.springram.controller.message.MessageType;
+import com.demkom58.springram.controller.message.TelegramMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
@@ -30,17 +29,15 @@ public class StartController {
     }
 
     @CommandMapping(
-            value = {"/start", "Start", "Старт", "/menu", "Menu", "Меню"},
-            event = EventType.TEXT_MESSAGE
+            value = {"start", "старт", "menu", "меню"},
+            event = MessageType.TEXT_MESSAGE
     )
-    public SendMessage start(Update update) {
-        final Message message = update.getMessage();
-        final Long chatId = message.getChatId();
-
-        return new SendMessage()
-                .setChatId(chatId)
-                .setText("Отобразил тебе меню :)")
-                .setReplyMarkup(menuKeyboardMarkup);
+    public SendMessage start(TelegramMessage message) {
+        return SendMessage.builder()
+                .chatId(String.valueOf(message.getChatId()))
+                .text("Отобразил тебе меню :)")
+                .replyMarkup(menuKeyboardMarkup)
+                .build();
     }
 
 }
