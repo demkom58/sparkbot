@@ -4,10 +4,10 @@ import com.demkom58.spark.entity.GroupAccess;
 import com.demkom58.spark.entity.User;
 import com.demkom58.spark.repo.GroupAccessRepository;
 import com.demkom58.spark.service.UserService;
-import com.demkom58.telegram.mvc.annotation.BotController;
-import com.demkom58.telegram.mvc.annotation.CommandMapping;
-import com.demkom58.telegram.mvc.message.MessageType;
-import com.demkom58.telegram.mvc.message.TelegramMessage;
+import com.demkom58.springram.controller.annotation.BotController;
+import com.demkom58.springram.controller.annotation.CommandMapping;
+import com.demkom58.springram.controller.message.MessageType;
+import com.demkom58.springram.controller.message.TelegramMessage;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
