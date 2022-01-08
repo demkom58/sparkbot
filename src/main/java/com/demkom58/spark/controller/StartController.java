@@ -29,7 +29,7 @@ public class StartController {
     }
 
     @CommandMapping(
-            value = {"/start", "Start", "Старт", "/menu", "Menu", "Меню"},
+            value = {"start", "старт", "menu", "меню"},
             event = MessageType.TEXT_MESSAGE
     )
     public SendMessage start(TelegramMessage message) {

@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 @BotController
 public class SayController {
     @CommandMapping(
-            value = {"/say {input}"},
+            value = {"say {input}"},
             event = MessageType.TEXT_MESSAGE
     )
     public SendMessage say(TelegramMessage message, @PathVariable String input) {

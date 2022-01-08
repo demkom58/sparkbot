@@ -21,7 +21,7 @@ public class GroupController {
     private final UserService userService;
 
     @CommandMapping(
-            value = {"/groups", "Groups", "Группы"},
+            value = {"groups", "группы"},
             event = MessageType.TEXT_MESSAGE
     )
     public SendMessage groups(TelegramMessage message) {
