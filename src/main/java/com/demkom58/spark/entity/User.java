@@ -19,4 +19,11 @@ public class User {
 
     @Column(name = "balance", nullable = false)
     private Long balance = 0L;
+
+    @Column(name = "chain", nullable = false)
+    private String chain = "default";
+
+    public User(Long id) {
+        this.id = id;
+    }
 }
