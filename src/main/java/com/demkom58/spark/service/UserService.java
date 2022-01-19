@@ -19,11 +19,15 @@ public class UserService {
         User found = userRepository.getById(id);
 
         if (found == null) {
-            found = new User(id, 0L);
+            found = new User(id);
             userRepository.save(found);
         }
 
         return found;
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
 }
