@@ -33,7 +33,7 @@ public class SayController {
     @Chain(MESSAGE_INPUT_CHAIN)
     public SendMessage sayInput(TelegramMessage message) {
         final User user = userService.getUser(message.getFromUser().getId());
-        user.setChain("default");
+        user.setChain(null);
         userService.saveUser(user);
 
         return SendMessage.builder()

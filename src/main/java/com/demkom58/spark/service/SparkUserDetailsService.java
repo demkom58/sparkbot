@@ -1,5 +1,6 @@
 package com.demkom58.spark.service;
 
+import com.demkom58.spark.entity.User;
 import com.demkom58.spark.repo.UserRepository;
 import com.demkom58.springram.controller.user.SpringramUserDetails;
 import com.demkom58.springram.controller.user.SpringramUserDetailsService;
@@ -17,8 +18,13 @@ public class SparkUserDetailsService implements SpringramUserDetailsService {
     @Nullable
     @Override
     public SpringramUserDetails loadById(long id) {
+        final User byId = repository.getById(id);
+        if (byId == null) {
+            return null;
+        }
+
         return new SpringramUserDetails() {
-            private final String chain = repository.getById(id).getChain();
+            private final String chain = byId.getChain();
 
             @Override
             public String getChain() {

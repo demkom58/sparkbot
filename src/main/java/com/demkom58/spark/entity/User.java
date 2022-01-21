@@ -20,8 +20,8 @@ public class User {
     @Column(name = "balance", nullable = false)
     private Long balance = 0L;
 
-    @Column(name = "chain", nullable = false)
-    private String chain = "default";
+    @Column(name = "chain", nullable = true)
+    private String chain = null;
 
     public User(Long id) {
         this.id = id;
