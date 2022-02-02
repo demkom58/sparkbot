@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'com.demkom58', name: 'springram', version: '0.3-SNAPSHOT'
+    implementation group: 'com.demkom58', name: 'springram', version: '0.4-SNAPSHOT'
     implementation group: 'org.telegram', name: 'telegrambots', version: '5.6.0'
 
     implementation group: 'com.github.bgerstle', name: 'result-java', version: '0.0.1'

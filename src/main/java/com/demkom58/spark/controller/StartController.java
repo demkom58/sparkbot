@@ -2,8 +2,8 @@ package com.demkom58.spark.controller;
 
 import com.demkom58.springram.controller.annotation.BotController;
 import com.demkom58.springram.controller.annotation.CommandMapping;
+import com.demkom58.springram.controller.message.ChatTextMessage;
 import com.demkom58.springram.controller.message.MessageType;
-import com.demkom58.springram.controller.message.TelegramMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -32,7 +32,7 @@ public class StartController {
             value = {"start", "старт", "menu", "меню"},
             event = MessageType.TEXT_MESSAGE
     )
-    public SendMessage start(TelegramMessage message) {
+    public SendMessage start(ChatTextMessage message) {
         return SendMessage.builder()
                 .chatId(String.valueOf(message.getChatId()))
                 .text("Отобразил тебе меню :)")

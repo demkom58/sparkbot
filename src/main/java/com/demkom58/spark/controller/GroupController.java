@@ -6,8 +6,8 @@ import com.demkom58.spark.repo.GroupAccessRepository;
 import com.demkom58.spark.service.UserService;
 import com.demkom58.springram.controller.annotation.BotController;
 import com.demkom58.springram.controller.annotation.CommandMapping;
+import com.demkom58.springram.controller.message.ChatTextMessage;
 import com.demkom58.springram.controller.message.MessageType;
-import com.demkom58.springram.controller.message.TelegramMessage;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
@@ -24,7 +24,7 @@ public class GroupController {
             value = {"groups", "группы"},
             event = MessageType.TEXT_MESSAGE
     )
-    public SendMessage groups(TelegramMessage message) {
+    public SendMessage groups(ChatTextMessage message) {
         final Long chatId = message.getChatId();
         final Long authorId = message.getFromUser().getId();
 
