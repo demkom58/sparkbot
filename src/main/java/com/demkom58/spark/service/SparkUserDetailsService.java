@@ -19,17 +19,14 @@ public class SparkUserDetailsService implements SpringramUserDetailsService {
     @Override
     public SpringramUserDetails loadById(long id) {
         final User byId = repository.getById(id);
-        if (byId == null) {
-            return null;
+        return byId == null ? null : new MySpringramUserDetails(byId);
+    }
+
+    record MySpringramUserDetails(User user) implements SpringramUserDetails {
+        @Nullable
+        @Override
+        public String getChain() {
+            return user.getChain();
         }
-
-        return new SpringramUserDetails() {
-            private final String chain = byId.getChain();
-
-            @Override
-            public String getChain() {
-                return chain;
-            }
-        };
     }
 }
