@@ -27,14 +27,16 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'com.demkom58', name: 'springram', version: '0.4-SNAPSHOT'
-    implementation group: 'org.telegram', name: 'telegrambots', version: '5.6.0'
+    implementation group: 'com.demkom58', name: 'springram-core', version: '0.5-SNAPSHOT'
+    implementation group: 'com.demkom58', name: 'springram-security', version: '0.5-SNAPSHOT'
+    implementation group: 'org.telegram', name: 'telegrambots', version: '6.0.1'
 
     implementation group: 'com.github.bgerstle', name: 'result-java', version: '0.0.1'
     implementation group: 'org.jetbrains', name: 'annotations', version: '23.0.0'
 
     implementation group: 'org.postgresql', name: 'postgresql'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter'
 
     compileOnly 'org.projectlombok:lombok'

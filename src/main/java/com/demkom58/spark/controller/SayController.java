@@ -6,6 +6,7 @@ import com.demkom58.springram.controller.annotation.BotController;
 import com.demkom58.springram.controller.annotation.Chain;
 import com.demkom58.springram.controller.annotation.CommandMapping;
 import com.demkom58.springram.controller.message.ChatTextMessage;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @BotController
@@ -26,6 +27,19 @@ public class SayController {
         return SendMessage.builder()
                 .chatId(String.valueOf(message.getChatId()))
                 .text("Send message now")
+                .build();
+    }
+
+    @CommandMapping("psay")
+    @PreAuthorize("hasRole('ROLE_TG_PREMIUM')")
+    public SendMessage psay(ChatTextMessage message) {
+        final User user = userService.getUser(message.getFromUser().getId());
+        user.setChain(MESSAGE_INPUT_CHAIN);
+        userService.saveUser(user);
+
+        return SendMessage.builder()
+                .chatId(String.valueOf(message.getChatId()))
+                .text("(For premium) Send message now")
                 .build();
     }
 
